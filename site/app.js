@@ -138,11 +138,14 @@ $("land-list").addEventListener("mousemove", (e) => {
 });
 $("land-list").addEventListener("mouseout", () => (preview.hidden = true));
 
-fetch("data/temur-dragons.txt")
-  .then((r) => (r.ok ? r.text() : ""))
-  .then((text) => {
-    if (text && !$("decklist").value) $("decklist").value = text;
-  });
+const loadExample = (replace) =>
+  fetch(`data/${$("example").value}`)
+    .then((r) => (r.ok ? r.text() : ""))
+    .then((text) => {
+      if (text && (replace || !$("decklist").value)) $("decklist").value = text;
+    });
+loadExample(false);
+$("example").addEventListener("change", () => loadExample(true));
 
 const sizeInput = $("tile-size");
 const setTileSize = (px) => $("land-cards").style.setProperty("--tile-size", `${px}px`);

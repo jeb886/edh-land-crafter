@@ -33,7 +33,7 @@ label { display: grid; gap: 0.3rem; font-size: 0.9rem; }
 #colors label:has(input:checked) { border-color: currentColor; background: #ffffff10; }
 #colors input { accent-color: currentColor; margin: 0; }
 .options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-textarea, input { font: inherit; background: #262932; color: inherit; border: 1px solid var(--border); border-radius: 6px; padding: 0.45rem 0.55rem; width: 100%; }
+textarea, input, select { font: inherit; background: #262932; color: inherit; border: 1px solid var(--border); border-radius: 6px; padding: 0.45rem 0.55rem; width: 100%; }
 textarea { resize: vertical; font-size: 0.85rem; }
 textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .toggle { display: inline-flex; align-items: center; gap: 0.45rem; align-self: end; padding-bottom: 0.5rem; }

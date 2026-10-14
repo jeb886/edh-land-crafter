@@ -18,3 +18,15 @@ main {
 .error {
   color: #ff6b6b;
 }
+
+footer {
+  max-width: 40rem;
+  margin: 4rem auto 2rem;
+  padding: 0 1rem;
+  font-size: 0.8rem;
+  color: #9a9ca3;
+}
+
+footer a {
+  color: inherit;
+}

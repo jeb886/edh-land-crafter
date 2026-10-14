@@ -3,12 +3,16 @@ import { BASICS, landColors } from "./deck.js";
 export function flattenRankings(rankings) {
   const out = [];
   for (const entry of rankings.lands) {
-    for (const name of entry.cards ?? [entry.name]) out.push({ name, cycle: entry.cycle ?? null, multiplayer: !!entry.multiplayer });
+    for (const name of entry.cards ?? [entry.name]) out.push({ name, cycle: entry.cycle ?? null, multiplayer: !!entry.multiplayer, fiveColor: !!entry.fiveColor });
   }
   return out;
 }
 
 export const withoutCycles = (ranked, cycles) => ranked.filter((l) => !cycles.includes(l.cycle));
+
+export function rankForColors(ranked, colors) {
+  return colors.length < 5 ? ranked : [...ranked.filter((l) => l.fiveColor), ...ranked.filter((l) => !l.fiveColor)];
+}
 
 export function rankForMode(ranked, multiplayer) {
   return multiplayer ? ranked : [...ranked.filter((l) => !l.multiplayer), ...ranked.filter((l) => l.multiplayer)];

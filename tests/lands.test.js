@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { exportList, flattenRankings, landType, rankForMode, selectLands, withoutCycles } from "../site/lands.js";
+import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, withoutCycles } from "../site/lands.js";
 import { mulberry32, simulate } from "../site/sim.js";
 
 const land = (name, produced_mana, color_identity = [], usd = "1.00") => ({ name, produced_mana, color_identity, oracle_text: "", usd });
@@ -26,6 +26,12 @@ test("selectLands skips unpriced lands when a budget is set", () => {
   const args = { ranked: [{ name: "Unpriced" }], cards: new Map([["unpriced", land("Unpriced", ["W", "U"], [], null)]]), colors: ["W", "U"], shares: { W: 50, U: 50 }, total: 36 };
   assert.equal(selectLands({ ...args, budget: 10 }).nonbasics.length, 0);
   assert.equal(selectLands(args).nonbasics.length, 1);
+});
+
+test("rankForColors lifts fiveColor lands only for five-color decks", () => {
+  const r = flattenRankings({ lands: [{ name: "Command Tower", fiveColor: true }, { cycle: "Shocklands", cards: ["Steam Vents"] }, { name: "Mana Confluence", fiveColor: true }] });
+  assert.deepEqual(rankForColors(r, ["W", "U", "B", "R", "G"]).map((l) => l.name), ["Command Tower", "Mana Confluence", "Steam Vents"]);
+  assert.deepEqual(rankForColors(r, ["U", "R"]).map((l) => l.name), ["Command Tower", "Steam Vents", "Mana Confluence"]);
 });
 
 test("withoutCycles drops excluded cycles", () => {

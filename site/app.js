@@ -1,6 +1,6 @@
 import { fetchCheapestPrices, fetchCollection, fetchPreferredImages, fetchPrintImages } from "./scryfall.js";
 import { BASICS, COLORS, countPips, deckStats, parseDecklist, sharesFromPips, sourceTargets } from "./deck.js";
-import { exportList, flattenRankings, landType, rankForMode, selectLands, withoutCycles } from "./lands.js";
+import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, withoutCycles } from "./lands.js";
 import { simulate } from "./sim.js";
 
 const $ = (id) => document.getElementById(id);
@@ -74,7 +74,7 @@ function render() {
   const budget = $("budget").value === "" ? null : Number($("budget").value);
   const minBasics = Number($("min-basics").value) || 0;
   const excluded = [["original-duals", "Original duals"], ["fetchlands", "Fetchlands"]].filter(([id]) => !$(id).checked).map(([, cycle]) => cycle);
-  const result = selectLands({ ranked: rankForMode(withoutCycles(ranked, excluded), $("multiplayer").checked), cards, colors, shares, total, budget, minBasics });
+  const result = selectLands({ ranked: rankForColors(rankForMode(withoutCycles(ranked, excluded), $("multiplayer").checked), colors), cards, colors, shares, total, budget, minBasics });
   const targets = sourceTargets(deck, colors, total);
 
   $("results").hidden = false;

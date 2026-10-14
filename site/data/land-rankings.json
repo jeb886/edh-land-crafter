@@ -10,7 +10,7 @@
     { "name": "City of Brass" },
     { "name": "Exotic Orchard" },
     { "name": "Path of Ancestry" },
-    { "cycle": "Pathways", "cards": ["Hengegate Pathway", "Clearwater Pathway", "Blightstep Pathway", "Cragcrown Pathway", "Branchloft Pathway", "Brightclove Pathway", "Riverglide Pathway", "Darkbore Pathway", "Needleverge Pathway", "Barkchannel Pathway"] },
+    { "cycle": "Pathways", "cards": ["Hengegate Pathway", "Clearwater Pathway", "Blightstep Pathway", "Cragcrown Pathway", "Branchloft Pathway", "Brightclimb Pathway", "Riverglide Pathway", "Darkbore Pathway", "Needleverge Pathway", "Barkchannel Pathway"] },
     { "cycle": "Bondlands", "cards": ["Sea of Clouds", "Morphic Pool", "Luxury Suite", "Spire Garden", "Bountiful Promenade", "Vault of Champions", "Training Center", "Undergrowth Stadium", "Spectator Seating", "Rejuvenating Springs"] },
     { "cycle": "Checklands", "cards": ["Glacial Fortress", "Drowned Catacomb", "Dragonskull Summit", "Rootbound Crag", "Sunpetal Grove", "Isolated Chapel", "Sulfur Falls", "Woodland Cemetery", "Clifftop Retreat", "Hinterland Harbor"] },
     { "cycle": "Slowlands", "cards": ["Deserted Beach", "Shipwreck Marsh", "Haunted Ridge", "Rockfall Vale", "Overgrown Farmland", "Shattered Sanctum", "Stormcarved Coast", "Deathcap Glade", "Sundown Pass", "Dreamroot Cascade"] },

@@ -43,3 +43,11 @@ test("sourcesNeeded grows with pips", () => {
   assert.ok(sourcesNeeded(2, 2) > sourcesNeeded(1, 2));
   assert.ok(sourcesNeeded(1, 5) < sourcesNeeded(1, 1));
 });
+
+test("parseDecklist reads the Temur dragons fixture", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const entries = parseDecklist(await readFile(new URL("./fixtures/temur-dragons.txt", import.meta.url), "utf8"));
+  assert.equal(entries.length, 93);
+  assert.equal(entries.reduce((s, e) => s + e.qty, 0), 100);
+  assert.ok(entries.some((e) => e.name === "Bala Ged Recovery"));
+});

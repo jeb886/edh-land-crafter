@@ -58,6 +58,7 @@ function render() {
   const targets = sourceTargets(deck, colors, total);
 
   $("results").hidden = false;
+  $("empty").hidden = true;
   $("stats").textContent = `${stats.spells} nonland cards, average mana value ${stats.avgMv.toFixed(2)}, ${stats.rampDraw} cheap ramp/draw spells. Recommended lands: ${stats.landCount}.`;
   $("color-table").tBodies[0].innerHTML = colors
     .map(

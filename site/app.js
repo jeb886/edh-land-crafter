@@ -155,7 +155,7 @@ function render() {
       ${count > 1 ? `<small>${type}</small>` : `<div class="ban">
         <button type="button" data-kind="names" data-value="${esc(label)}" title="Never pick ${esc(label)}">✕</button>
         <small>${type}</small>
-        ${cycle ? `<button type="button" data-kind="cycles" data-value="${esc(cycle)}" title="Never pick any ${esc(cycle)}">✕ Cycle</button>` : "<span></span>"}
+        ${cycle ? `<button type="button" data-kind="cycles" data-value="${esc(cycle)}" title="Never pick any ${esc(cycle)}">✕ Cycle</button>` : "<i></i>"}
       </div>`}</div>`;
   $("land-cards").innerHTML = [
     ...result.nonbasics.map((l) => tile(l.card, l.name, landType(l.card, l.cycle), 1, l.cycle)),

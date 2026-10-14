@@ -46,3 +46,8 @@ th, td { padding: 0.3rem 0.6rem; text-align: left; border-bottom: 1px solid #3a3
 #land-list small { color: #9a9ca3; }
 #preview { position: fixed; width: 244px; border-radius: 12px; pointer-events: none; z-index: 10; }
 .pip-W { color: #f8f0c8; } .pip-U { color: #7fb6ff; } .pip-B { color: #c6a6d9; } .pip-R { color: #ff8a70; } .pip-G { color: #6fd08c; }
+#land-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; }
+.tile { position: relative; display: block; color: inherit; }
+.tile img { width: 100%; border-radius: 5%; display: block; }
+.tile span { display: grid; place-items: center; aspect-ratio: 488 / 680; border: 1px solid #3a3d46; border-radius: 5%; padding: 0.5rem; text-align: center; }
+.tile b { position: absolute; top: 0.4rem; right: 0.4rem; background: #000c; padding: 0.1rem 0.45rem; border-radius: 999px; }

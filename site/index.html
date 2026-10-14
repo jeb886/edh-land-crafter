@@ -24,6 +24,7 @@
         <div class="row">
           <label>Land count <input id="land-count" type="number" min="30" max="45" placeholder="auto" /></label>
           <label>Max price per land ($) <input id="budget" type="number" min="0" step="0.5" placeholder="no limit" /></label>
+          <label>Min basics per color <input id="min-basics" type="number" min="0" max="15" value="3" /></label>
         </div>
         <button type="submit">Build mana base</button>
         <p id="status"></p>
@@ -39,6 +40,9 @@
 
         <h2>Lands (<span id="land-total"></span>)</h2>
         <ul id="land-list"></ul>
+
+        <h2>Card view</h2>
+        <div id="land-cards"></div>
 
         <h2>Export</h2>
         <textarea id="export" rows="10" readonly></textarea>

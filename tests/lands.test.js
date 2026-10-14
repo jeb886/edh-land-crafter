@@ -22,6 +22,14 @@ test("selectLands respects colors, budget and shares", () => {
   assert.match(exportList(r), /^1 Command Tower\n1 Hallowed Fountain\n\d+ Plains\n\d+ Island$/);
 });
 
+test("selectLands keeps a minimum of basics per color", () => {
+  const r = selectLands({ ranked, cards, colors: ["W", "U"], shares: { W: 0, U: 100 }, total: 36, minBasics: 3 });
+  assert.equal(r.basics.W, 3);
+  assert.equal(r.nonbasics.length + r.basics.W + r.basics.U, 36);
+  const tight = selectLands({ ranked, cards, colors: ["W", "U"], shares: { W: 50, U: 50 }, total: 7, minBasics: 3 });
+  assert.equal(tight.nonbasics.length, 1);
+});
+
 test("simulate reports land drops", () => {
   const lands = Array(37).fill(["G"]);
   const s = simulate({ lands, colors: ["G"], games: 2000, rng: mulberry32(1) });

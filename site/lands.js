@@ -10,9 +10,10 @@ export function flattenRankings(rankings) {
 
 const NONBASIC_CAP = { 1: 0, 2: 14, 3: 20, 4: 24, 5: 26 };
 
-export function selectLands({ ranked, cards, colors, shares, total, budget = null }) {
+export function selectLands({ ranked, cards, colors, shares, total, budget = null, minBasics = 0 }) {
   const nonbasics = [];
-  const cap = Math.min(NONBASIC_CAP[colors.length] ?? 0, total);
+  const reserved = Math.min(total, minBasics * colors.length);
+  const cap = Math.min(NONBASIC_CAP[colors.length] ?? 0, total - reserved);
   for (const { name, cycle } of ranked) {
     if (nonbasics.length >= cap) break;
     const card = cards.get(name.toLowerCase());
@@ -28,7 +29,14 @@ export function selectLands({ ranked, cards, colors, shares, total, budget = nul
   const active = colors.filter((c) => (shares[c] ?? 0) > 0);
   const pool = active.length ? active : colors;
   const basics = Object.fromEntries(colors.map((c) => [c, 0]));
-  for (let i = nonbasics.length; i < total && pool.length; i++) {
+  let remaining = total - nonbasics.length;
+  for (const c of colors) {
+    const n = Math.min(minBasics, remaining);
+    basics[c] += n;
+    sources[c] += n;
+    remaining -= n;
+  }
+  for (; remaining > 0 && pool.length; remaining--) {
     let best = pool[0], bestScore = -1;
     for (const c of pool) {
       const score = (shares[c] || 1) / (sources[c] + 1);

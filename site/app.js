@@ -30,7 +30,7 @@ $("deck-form").addEventListener("submit", async (e) => {
   setStatus("Looking up cards on Scryfall…");
   try {
     const ranked = await loadRankings();
-    const { cards, notFound } = await fetchCollection([...entries.map((e) => e.name), ...ranked.map((l) => l.name)]);
+    const { cards, notFound } = await fetchCollection([...entries.map((e) => e.name), ...ranked.map((l) => l.name), ...Object.values(BASICS)]);
     const deck = entries.map((e) => ({ ...e, card: cards.get(e.name.toLowerCase()) })).filter((e) => e.card);
     const picked = [...document.querySelectorAll("#colors input:checked")].map((i) => i.value);
     const colors = picked.length ? picked : COLORS.filter((c) => deck.some((e) => e.card.color_identity.includes(c)));
@@ -47,13 +47,14 @@ $("deck-form").addEventListener("submit", async (e) => {
   }
 });
 
-for (const id of ["land-count", "budget"]) $(id).addEventListener("change", () => state.deck && render());
+for (const id of ["land-count", "budget", "min-basics"]) $(id).addEventListener("change", () => state.deck && render());
 
 function render() {
   const { deck, cards, colors, pips, shares, stats, ranked } = state;
   const total = Number($("land-count").value) || stats.landCount;
   const budget = $("budget").value === "" ? null : Number($("budget").value);
-  const result = selectLands({ ranked, cards, colors, shares, total, budget });
+  const minBasics = Number($("min-basics").value) || 0;
+  const result = selectLands({ ranked, cards, colors, shares, total, budget, minBasics });
   const targets = sourceTargets(deck, colors, total);
 
   $("results").hidden = false;
@@ -82,6 +83,14 @@ function render() {
     ...Object.entries(result.basics).filter(([, n]) => n).map(([c, n]) => `<li>${n} ${BASICS[c]}</li>`),
   ].join("");
   $("export").value = exportList(result);
+  const tile = (card, label, count = 1) =>
+    `<a class="tile" href="${card?.scryfall_uri ?? "#"}" target="_blank" rel="noopener" title="${label}">
+      ${card?.image ? `<img src="${card.image}" alt="${label}" loading="lazy" />` : `<span>${label}</span>`}
+      ${count > 1 ? `<b>×${count}</b>` : ""}</a>`;
+  $("land-cards").innerHTML = [
+    ...result.nonbasics.map((l) => tile(l.card, l.name)),
+    ...Object.entries(result.basics).filter(([, n]) => n).map(([c, n]) => tile(cards.get(BASICS[c].toLowerCase()), BASICS[c], n)),
+  ].join("");
 
   const lands = [...result.nonbasics.map((l) => l.produces), ...Object.entries(result.basics).flatMap(([c, n]) => Array(n).fill([c]))];
   const sim = simulate({ lands, colors });
@@ -107,3 +116,9 @@ $("land-list").addEventListener("mousemove", (e) => {
   preview.style.top = `${Math.max(8, e.clientY - 160)}px`;
 });
 $("land-list").addEventListener("mouseout", () => (preview.hidden = true));
+
+fetch("data/temur-dragons.txt")
+  .then((r) => (r.ok ? r.text() : ""))
+  .then((text) => {
+    if (text && !$("decklist").value) $("decklist").value = text;
+  });

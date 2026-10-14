@@ -40,6 +40,7 @@ textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: 
 .toggle input { width: auto; accent-color: var(--accent); }
 button { font: inherit; cursor: pointer; background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 0.55rem 1.1rem; font-weight: 600; justify-self: start; margin-top: 0.5rem; }
 button:hover { filter: brightness(1.12); }
+button:disabled { opacity: 0.6; cursor: progress; filter: none; }
 #status:empty { display: none; }
 .ok { color: #5fd38d; }
 .error { color: #ff6b6b; }

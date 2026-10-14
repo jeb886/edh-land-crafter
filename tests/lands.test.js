@@ -28,10 +28,11 @@ test("selectLands skips unpriced lands when a budget is set", () => {
   assert.equal(selectLands(args).nonbasics.length, 1);
 });
 
-test("rankForColors lifts fiveColor lands only for five-color decks", () => {
+test("rankForColors lifts fiveColor lands only for four- and five-color decks", () => {
   const r = flattenRankings({ lands: [{ name: "Command Tower", fiveColor: true }, { cycle: "Shocklands", cards: ["Steam Vents"] }, { name: "Mana Confluence", fiveColor: true }] });
   assert.deepEqual(rankForColors(r, ["W", "U", "B", "R", "G"]).map((l) => l.name), ["Command Tower", "Mana Confluence", "Steam Vents"]);
-  assert.deepEqual(rankForColors(r, ["U", "R"]).map((l) => l.name), ["Command Tower", "Steam Vents", "Mana Confluence"]);
+  assert.deepEqual(rankForColors(r, ["U", "B", "R", "G"]).map((l) => l.name), ["Command Tower", "Mana Confluence", "Steam Vents"]);
+  assert.deepEqual(rankForColors(r, ["U", "R", "G"]).map((l) => l.name), ["Command Tower", "Steam Vents", "Mana Confluence"]);
 });
 
 test("withoutCycles drops excluded cycles", () => {

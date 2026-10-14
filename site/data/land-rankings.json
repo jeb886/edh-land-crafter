@@ -1,5 +1,5 @@
 {
-  "_readme": "Entries with fiveColor:true move to the top (after Command Tower) for five-color decks. Ranked best-first. Each entry is a single land {\"name\"} or a cycle {\"cycle\", \"cards\"}. Reorder entries to change priority. Lands are only used if they fit the commander's colors and make at least 2 of them. Entries with \"multiplayer\": true drop to the bottom when the Multiplayer toggle is off.",
+  "_readme": "Entries with fiveColor:true move to the top (after Command Tower) for four- and five-color decks. Ranked best-first. Each entry is a single land {\"name\"} or a cycle {\"cycle\", \"cards\"}. Reorder entries to change priority. Lands are only used if they fit the commander's colors and make at least 2 of them. Entries with \"multiplayer\": true drop to the bottom when the Multiplayer toggle is off.",
   "lands": [
     {"name": "Command Tower", "fiveColor": true},
     {"cycle": "Original duals", "cards": ["Tundra", "Underground Sea", "Badlands", "Taiga", "Savannah", "Scrubland", "Volcanic Island", "Bayou", "Plateau", "Tropical Island"]},
@@ -10,8 +10,6 @@
     {"name": "Prismatic Vista", "fiveColor": true},
     {"name": "Fabled Passage", "fiveColor": true},
     {"name": "Path of Ancestry", "fiveColor": true},
-    {"name": "The World Tree", "fiveColor": true},
-    {"name": "Tarnished Citadel", "fiveColor": true},
     {"cycle": "Surveil lands", "cards": ["Meticulous Archive", "Undercity Sewers", "Raucous Theater", "Commercial District", "Lush Portico", "Shadowy Backstreet", "Thundering Falls", "Underground Mortuary", "Elegant Parlor", "Hedge Maze"]},
     {"cycle": "Verge lands", "cards": ["Hushwood Verge", "Thornspire Verge", "Floodfarm Verge", "Gloomlake Verge", "Blazemire Verge", "Willowrush Verge", "Wastewood Verge", "Bleachbone Verge", "Riverpyre Verge", "Sunbillow Verge"]},
     {"cycle": "Painlands", "cards": ["Adarkar Wastes", "Underground River", "Sulfurous Springs", "Karplusan Forest", "Brushland", "Caves of Koilos", "Shivan Reef", "Llanowar Wastes", "Battlefield Forge", "Yavimaya Coast"]},
@@ -23,6 +21,8 @@
     {"name": "Forbidden Orchard", "fiveColor": true},
     {"name": "Grand Coliseum", "fiveColor": true},
     {"name": "Gemstone Mine", "fiveColor": true},
+    {"name": "The World Tree", "fiveColor": true},
+    {"name": "Tarnished Citadel", "fiveColor": true},
     {"cycle": "Horizon lands", "cards": ["Horizon Canopy", "Sunbaked Canyon", "Fiery Islet", "Nurturing Peatland", "Silent Clearing", "Waterlogged Grove"]},
     {"cycle": "Filterlands", "cards": ["Mystic Gate", "Sunken Ruins", "Graven Cairns", "Fire-Lit Thicket", "Wooded Bastion", "Fetid Heath", "Cascade Bluffs", "Twilight Mire", "Rugged Prairie", "Flooded Grove"]},
     {"cycle": "Odyssey filterlands", "cards": ["Sungrass Prairie", "Mossfire Valley", "Skycloud Expanse", "Darkwater Catacombs", "Overflowing Basin", "Shadowblood Ridge", "Viridescent Bog", "Sunscorched Divide", "Ferrous Lake", "Desolate Mire"]},

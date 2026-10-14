@@ -110,10 +110,11 @@ function render() {
     ...Object.entries(result.basics).filter(([, n]) => n).map(([c, n]) => `<li>${n} ${BASICS[c]}</li>`),
   ].join("");
   $("export").value = exportList(result);
+  const money = (usd) => (usd == null ? "" : `<i class="price">$${Number(usd).toFixed(2)}</i>`);
   const tile = (card, label, type, count = 1) =>
     `<a class="tile" href="${card?.scryfall_uri ?? "#"}" target="_blank" rel="noopener" title="${label}">
       ${card?.image ? `<img src="${card.image}" alt="${label}" loading="lazy" />` : `<span>${label}</span>`}
-      ${count > 1 ? `<b>×${count}</b>` : ""}<small>${type}</small></a>`;
+      ${count > 1 ? `<b>×${count}</b>` : ""}${money(card?.usd)}<small>${type}</small></a>`;
   $("land-cards").innerHTML = [
     ...result.nonbasics.map((l) => tile(l.card, l.name, landType(l.card, l.cycle))),
     ...Object.entries(result.basics).filter(([, n]) => n).map(([c, n]) => tile(cards.get(BASICS[c].toLowerCase()), BASICS[c], "Basic", n)),

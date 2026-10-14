@@ -56,7 +56,8 @@ td input[type=range] { width: 6rem; vertical-align: middle; accent-color: var(--
 .tile img { width: 100%; aspect-ratio: 488 / 680; border-radius: 4.75% / 3.5%; display: block; box-shadow: 0 4px 14px #0008; }
 .tile span { display: grid; place-items: center; aspect-ratio: 488 / 680; border: 1px solid var(--border); border-radius: 4.75% / 3.5%; padding: 0.5rem; text-align: center; }
 .tile small { display: block; text-align: center; margin-top: 0.35rem; color: var(--muted); font-size: 0.8rem; }
-.tile b { position: absolute; top: 0.5rem; right: 0.5rem; background: #000c; color: #fff; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.85rem; }
+.tile b { position: absolute; top: 0.5rem; left: 0.5rem; background: #000c; color: #fff; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.85rem; }
+.tile .price { position: absolute; top: 0.5rem; right: 0.5rem; background: #0009; color: #fffc; font-style: normal; font-size: 0.7rem; padding: 0.05rem 0.4rem; border-radius: 999px; backdrop-filter: blur(2px); }
 
 .size { display: inline-flex; align-items: center; gap: 0.5rem; margin-left: auto; font-size: 0.8rem; font-weight: 400; color: var(--muted); }
 .size input { width: 9rem; padding: 0; accent-color: var(--accent); }

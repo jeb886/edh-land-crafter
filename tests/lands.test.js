@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { exportList, flattenRankings, landType, rankForMode, selectLands } from "../site/lands.js";
+import { exportList, flattenRankings, landType, rankForMode, selectLands, withoutCycles } from "../site/lands.js";
 import { mulberry32, simulate } from "../site/sim.js";
 
 const land = (name, produced_mana, color_identity = [], usd = "1.00") => ({ name, produced_mana, color_identity, oracle_text: "", usd });
@@ -26,6 +26,11 @@ test("selectLands skips unpriced lands when a budget is set", () => {
   const args = { ranked: [{ name: "Unpriced" }], cards: new Map([["unpriced", land("Unpriced", ["W", "U"], [], null)]]), colors: ["W", "U"], shares: { W: 50, U: 50 }, total: 36 };
   assert.equal(selectLands({ ...args, budget: 10 }).nonbasics.length, 0);
   assert.equal(selectLands(args).nonbasics.length, 1);
+});
+
+test("withoutCycles drops excluded cycles", () => {
+  const r = flattenRankings({ lands: [{ name: "Command Tower" }, { cycle: "Original duals", cards: ["Tundra"] }, { cycle: "Fetchlands", cards: ["Flooded Strand"] }] });
+  assert.deepEqual(withoutCycles(r, ["Original duals"]).map((l) => l.name), ["Command Tower", "Flooded Strand"]);
 });
 
 test("selectLands keeps a minimum of basics per color", () => {

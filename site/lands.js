@@ -8,6 +8,8 @@ export function flattenRankings(rankings) {
   return out;
 }
 
+export const withoutCycles = (ranked, cycles) => ranked.filter((l) => !cycles.includes(l.cycle));
+
 export function rankForMode(ranked, multiplayer) {
   return multiplayer ? ranked : [...ranked.filter((l) => !l.multiplayer), ...ranked.filter((l) => l.multiplayer)];
 }

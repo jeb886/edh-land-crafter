@@ -59,6 +59,14 @@ test("parseDecklist reads the Miirym sample deck (lands removed, MDFC spells kep
   assert.ok(!entries.some((e) => /Pathway|Forest|Command Tower/.test(e.name)));
 });
 
+test("parseDecklist reads the Niv-Mizzet sample deck", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const entries = parseDecklist(await readFile(new URL("../site/data/niv.txt", import.meta.url), "utf8"));
+  assert.equal(entries.reduce((s, e) => s + e.qty, 0), 65);
+  assert.ok(entries.some((e) => e.name === "Niv-Mizzet, Parun"));
+  assert.ok(!entries.some((e) => /Island|Mountain|Steam Vents|Reliquary Tower/.test(e.name)));
+});
+
 test("parseDecklist reads the Garth sample deck", async () => {
   const { readFile } = await import("node:fs/promises");
   const entries = parseDecklist(await readFile(new URL("../site/data/garth.txt", import.meta.url), "utf8"));

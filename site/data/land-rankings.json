@@ -2,8 +2,8 @@
   "_readme": "Entries with fiveColor:true move to the top (after Command Tower) for four- and five-color decks. Ranked best-first. Each entry is a single land {\"name\"} or a cycle {\"cycle\", \"cards\"}. Reorder entries to change priority. Lands are only used if they fit the commander's colors and make at least 2 of them. Entries with \"multiplayer\": true drop to the bottom when the Multiplayer toggle is off.",
   "lands": [
     {"name": "Command Tower", "fiveColor": true},
-    {"cycle": "Original duals", "cards": ["Tundra", "Underground Sea", "Badlands", "Taiga", "Savannah", "Scrubland", "Volcanic Island", "Bayou", "Plateau", "Tropical Island"]},
     {"cycle": "Fetchlands", "cards": ["Flooded Strand", "Polluted Delta", "Bloodstained Mire", "Wooded Foothills", "Windswept Heath", "Marsh Flats", "Scalding Tarn", "Verdant Catacombs", "Arid Mesa", "Misty Rainforest"]},
+    {"cycle": "Original duals", "cards": ["Tundra", "Underground Sea", "Badlands", "Taiga", "Savannah", "Scrubland", "Volcanic Island", "Bayou", "Plateau", "Tropical Island"]},
     {"cycle": "Shocklands", "cards": ["Hallowed Fountain", "Watery Grave", "Blood Crypt", "Stomping Ground", "Temple Garden", "Godless Shrine", "Steam Vents", "Overgrown Tomb", "Sacred Foundry", "Breeding Pool"]},
     {"cycle": "Bondlands", "multiplayer": true, "cards": ["Sea of Clouds", "Morphic Pool", "Luxury Suite", "Spire Garden", "Bountiful Promenade", "Vault of Champions", "Training Center", "Undergrowth Stadium", "Spectator Seating", "Rejuvenating Springs"]},
     {"name": "Exotic Orchard", "fiveColor": true},

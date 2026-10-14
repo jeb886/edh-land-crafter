@@ -65,6 +65,9 @@ td input[type=range] { width: 6rem; vertical-align: middle; accent-color: var(--
 .ban button { margin: 0; padding: 0.1rem 0.45rem; font-size: 0.7rem; font-weight: 500; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; }
 .ban button:hover { color: #fff; background: #b33; border-color: #b33; filter: none; }
 #blacklist-panel { margin-top: 1.25rem; }
+#blacklist-reset { margin: 0 0 0 0.75rem; padding: 0.25rem 0.7rem; font-size: 0.8rem; vertical-align: middle; }
+.danger { background: #b33; color: #fff; }
+.danger:hover { background: #d44; filter: none; }
 #blacklist { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; font-size: 0.9rem; }
 #blacklist li { display: flex; align-items: center; gap: 0.4rem; }
 .unban { margin: 0; padding: 0 0.4rem; font-size: 0.75rem; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; }

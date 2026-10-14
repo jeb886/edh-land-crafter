@@ -55,6 +55,13 @@ $("blacklist").addEventListener("click", (e) => {
   renderBlacklist();
   if (state.deck) render();
 });
+$("blacklist-reset").addEventListener("click", () => {
+  blacklist.names = [];
+  blacklist.cycles = [];
+  saveBlacklist();
+  renderBlacklist();
+  if (state.deck) render();
+});
 renderBlacklist();
 
 const pct = (x) => `${Math.round(x * 100)}%`;

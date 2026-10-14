@@ -1,9 +1,10 @@
+import { fetchCard } from "./scryfall.js";
+
 const statusEl = document.getElementById("status");
 
-fetch("/api/health")
-  .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
-  .then((data) => {
-    statusEl.textContent = data.status;
+fetchCard("Command Tower")
+  .then((card) => {
+    statusEl.textContent = `connected (loaded ${card.name})`;
     statusEl.className = "ok";
   })
   .catch(() => {

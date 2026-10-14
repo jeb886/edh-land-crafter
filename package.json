@@ -1,0 +1,8 @@
+{
+  "name": "edh-land-crafter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}

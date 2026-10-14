@@ -38,7 +38,9 @@
         <p id="empty" class="panel muted">Your lands will show up here. Paste a deck (or use the sample) and click <b>Build mana base</b>.</p>
         <section id="results" hidden>
           <div class="panel">
-            <h2>Lands <span class="count" id="land-total"></span></h2>
+            <h2>Lands <span class="count" id="land-total"></span>
+              <label class="size">Image size <input id="tile-size" type="range" min="120" max="400" step="10" value="220" /></label>
+            </h2>
             <div id="land-cards"></div>
           </div>
 

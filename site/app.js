@@ -123,3 +123,12 @@ fetch("data/temur-dragons.txt")
   .then((text) => {
     if (text && !$("decklist").value) $("decklist").value = text;
   });
+
+const sizeInput = $("tile-size");
+const setTileSize = (px) => $("land-cards").style.setProperty("--tile-size", `${px}px`);
+sizeInput.value = localStorage.getItem("tileSize") ?? sizeInput.value;
+setTileSize(sizeInput.value);
+sizeInput.addEventListener("input", () => {
+  setTileSize(sizeInput.value);
+  localStorage.setItem("tileSize", sizeInput.value);
+});

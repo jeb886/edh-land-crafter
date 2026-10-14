@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { fetchCheapestPrices, fetchCollection } from "../site/scryfall.js";
+import { fetchCheapestPrices, fetchCollection, fetchPreferredImages, fetchPrintImages } from "../site/scryfall.js";
 
 const memoryStorage = () => {
   const m = new Map();
@@ -51,4 +51,30 @@ test("fetchCheapestPrices searches game:paper cheapest:usd and caches", async ()
 test("fetchCheapestPrices treats 404 as no matches", async () => {
   const p = await fetchCheapestPrices(["Nope"], { fetchImpl: async () => ({ ok: false, status: 404 }), storage: memoryStorage(), wait: async () => {} });
   assert.equal(p.get("nope"), null);
+});
+
+test("fetchPreferredImages searches black-border 2015-frame prints", async () => {
+  const urls = [];
+  const fetchImpl = async (url) => {
+    urls.push(decodeURIComponent(url));
+    return { ok: true, status: 200, json: async () => ({ data: [{ name: "Command Tower", image_uris: { normal: "ct.jpg" } }] }) };
+  };
+  const m = await fetchPreferredImages(["Command Tower", "Other"], { fetchImpl, storage: memoryStorage(), wait: async () => {} });
+  assert.equal(m.get("command tower"), "ct.jpg");
+  assert.equal(m.get("other"), null);
+  assert.match(urls[0], /q=game:paper border:black frame:2015 \(!"Command Tower" or !"Other"\)/);
+});
+
+test("fetchPrintImages looks up set/collector_number and caches", async () => {
+  const bodies = [];
+  const fetchImpl = async (url, init) => {
+    bodies.push(JSON.parse(init.body));
+    return { ok: true, status: 200, json: async () => ({ data: [{ name: "Forest", set: "fra", collector_number: "290", image_uris: { normal: "f.jpg" } }] }) };
+  };
+  const storage = memoryStorage();
+  const prints = [{ set: "fra", collector_number: "290" }];
+  assert.equal((await fetchPrintImages(prints, { fetchImpl, storage, wait: async () => {} })).get("forest"), "f.jpg");
+  assert.deepEqual(bodies[0].identifiers, prints);
+  assert.equal((await fetchPrintImages(prints, { fetchImpl, storage, wait: async () => {} })).get("forest"), "f.jpg");
+  assert.equal(bodies.length, 1);
 });

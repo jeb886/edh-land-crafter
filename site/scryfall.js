@@ -14,6 +14,8 @@ export async function fetchCard(name, fetchImpl = fetch) {
   return res.json();
 }
 
+const imageOf = (card) => card.image_uris?.normal ?? card.card_faces?.[0]?.image_uris?.normal ?? null;
+
 function slim(card) {
   const face = card.card_faces?.[0] ?? {};
   return {
@@ -25,7 +27,7 @@ function slim(card) {
     color_identity: card.color_identity ?? [],
     produced_mana: card.produced_mana ?? [],
     usd: card.prices?.usd ?? null,
-    image: card.image_uris?.normal ?? face.image_uris?.normal ?? null,
+    image: imageOf(card),
     scryfall_uri: card.scryfall_uri,
   };
 }
@@ -120,36 +122,67 @@ function cheapestFinish(prices = {}) {
 const priceKey = (name) => `sfp:${name.toLowerCase()}`;
 
 // Cheapest paper USD price per card, via `game:paper cheapest:usd` searches.
-export async function fetchCheapestPrices(names, opts = {}) {
+export const fetchCheapestPrices = (names, opts) =>
+  searchByName(names, "game:paper cheapest:usd", (raw) => cheapestFinish(raw.prices), priceKey, opts);
+
+// Image of a black-border, 2015-frame paper printing when one exists.
+export const fetchPreferredImages = (names, opts) =>
+  searchByName(names, "game:paper border:black frame:2015", imageOf, (n) => `sfi:${n.toLowerCase()}`, opts);
+
+async function searchByName(names, filter, pick, cacheKey, opts = {}) {
   const { fetchImpl = fetch, storage = globalThis.localStorage, wait = sleep, now = Date.now() } = opts;
-  const prices = new Map();
+  const results = new Map();
   const missing = [];
   for (const name of new Set(names)) {
-    const hit = readEntry(storage, priceKey(name), now);
-    if (hit) prices.set(name.toLowerCase(), hit.usd);
+    const hit = readEntry(storage, cacheKey(name), now);
+    if (hit) results.set(name.toLowerCase(), hit.value);
     else missing.push(name);
   }
   for (let i = 0; i < missing.length; i += PRICE_BATCH) {
     if (i > 0) await wait(GAP_MS);
     const batch = missing.slice(i, i + PRICE_BATCH);
-    const q = `game:paper cheapest:usd (${batch.map((n) => `!"${n.replace(/"/g, "")}"`).join(" or ")})`;
+    const q = `${filter} (${batch.map((n) => `!"${n.replace(/"/g, "")}"`).join(" or ")})`;
     const found = new Map();
     let url = `${SCRYFALL_API}/cards/search?q=${encodeURIComponent(q)}`;
     while (url) {
       const data = await requestWithRetry(url, { headers: { Accept: "application/json" } }, fetchImpl, wait, true);
       for (const raw of data.data ?? []) {
-        const usd = cheapestFinish(raw.prices);
-        found.set(raw.name.toLowerCase(), usd);
-        for (const f of raw.card_faces ?? []) found.set(f.name.toLowerCase(), usd);
+        const value = pick(raw);
+        found.set(raw.name.toLowerCase(), value);
+        for (const f of raw.card_faces ?? []) found.set(f.name.toLowerCase(), value);
       }
       url = data.has_more ? data.next_page : null;
       if (url) await wait(GAP_MS);
     }
     for (const name of batch) {
-      const usd = found.get(name.toLowerCase()) ?? null;
-      prices.set(name.toLowerCase(), usd);
-      writeEntry(storage, priceKey(name), { t: now, usd });
+      const value = found.get(name.toLowerCase()) ?? null;
+      results.set(name.toLowerCase(), value);
+      writeEntry(storage, cacheKey(name), { t: now, value });
     }
   }
-  return prices;
+  return results;
+}
+
+// Images for specific printings, e.g. { set: "fra", collector_number: "290" }; keyed by card name.
+export async function fetchPrintImages(prints, opts = {}) {
+  const { fetchImpl = fetch, storage = globalThis.localStorage, wait = sleep, now = Date.now() } = opts;
+  const k = (p) => `sfx:${p.set}/${p.collector_number}`;
+  const images = new Map();
+  const missing = [];
+  for (const p of prints) {
+    const hit = readEntry(storage, k(p), now);
+    if (hit) images.set(hit.name.toLowerCase(), hit.image);
+    else missing.push(p);
+  }
+  for (let i = 0; i < missing.length; i += BATCH) {
+    if (i > 0) await wait(GAP_MS);
+    const batch = missing.slice(i, i + BATCH);
+    const data = await postWithRetry({ identifiers: batch.map(({ set, collector_number }) => ({ set, collector_number })) }, fetchImpl, wait);
+    for (const raw of data.data ?? []) {
+      const image = imageOf(raw);
+      images.set(raw.name.toLowerCase(), image);
+      writeEntry(storage, k({ set: raw.set, collector_number: raw.collector_number }), { t: now, name: raw.name, image });
+    }
+  }
+  return images;
 }

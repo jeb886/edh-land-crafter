@@ -1,4 +1,4 @@
-import { fetchCheapestPrices, fetchCollection } from "./scryfall.js";
+import { fetchCheapestPrices, fetchCollection, fetchPreferredImages, fetchPrintImages } from "./scryfall.js";
 import { BASICS, COLORS, countPips, deckStats, parseDecklist, sharesFromPips, sourceTargets } from "./deck.js";
 import { exportList, flattenRankings, landType, rankForMode, selectLands, withoutCycles } from "./lands.js";
 import { simulate } from "./sim.js";
@@ -10,6 +10,15 @@ const state = {};
 $("colors").innerHTML = COLORS.map(
   (c) => `<label class="pip pip-${c}"><input type="checkbox" value="${c}" /> ${COLOR_NAMES[c]}</label>`,
 ).join("");
+
+const BASIC_PRINTS = [
+  { set: "fra", collector_number: "282" },
+  { set: "fra", collector_number: "284" },
+  { set: "fra", collector_number: "286" },
+  { set: "fra", collector_number: "288" },
+  { set: "fra", collector_number: "290" },
+  { set: "ogw", collector_number: "183a" },
+];
 
 const pct = (x) => `${Math.round(x * 100)}%`;
 
@@ -33,10 +42,14 @@ $("deck-form").addEventListener("submit", async (e) => {
     const { cards, notFound } = await fetchCollection([...entries.map((e) => e.name), ...ranked.map((l) => l.name), ...Object.values(BASICS)]);
     setStatus("Looking up cheapest paper prices…");
     const prices = await fetchCheapestPrices(ranked.map((l) => l.name));
+    setStatus("Looking up card art…");
+    const images = await fetchPreferredImages(ranked.map((l) => l.name));
+    const basicImages = await fetchPrintImages(BASIC_PRINTS);
     for (const l of ranked) {
       const k = l.name.toLowerCase();
-      if (cards.has(k)) cards.set(k, { ...cards.get(k), usd: prices.get(k) ?? null });
+      if (cards.has(k)) cards.set(k, { ...cards.get(k), usd: prices.get(k) ?? null, image: images.get(k) ?? cards.get(k).image });
     }
+    for (const [k, image] of basicImages) if (cards.has(k) && image) cards.set(k, { ...cards.get(k), image });
     const deck = entries.map((e) => ({ ...e, card: cards.get(e.name.toLowerCase()) })).filter((e) => e.card);
     const picked = [...document.querySelectorAll("#colors input:checked")].map((i) => i.value);
     const colors = picked.length ? picked : COLORS.filter((c) => deck.some((e) => e.card.color_identity.includes(c)));

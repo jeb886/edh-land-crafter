@@ -8,16 +8,11 @@ export function flattenRankings(rankings) {
   return out;
 }
 
-export const withoutCycles = (ranked, cycles) => ranked.filter((l) => !cycles.includes(l.cycle));
 export const withoutBanned = (ranked, { names = [], cycles = [] }) =>
   ranked.filter((l) => !names.includes(l.name) && !(l.cycle && cycles.includes(l.cycle)));
 
 export function rankForColors(ranked, colors) {
   return colors.length < 4 ? ranked : [...ranked.filter((l) => l.fiveColor), ...ranked.filter((l) => !l.fiveColor)];
-}
-
-export function rankForMode(ranked, multiplayer) {
-  return multiplayer ? ranked : [...ranked.filter((l) => !l.multiplayer), ...ranked.filter((l) => l.multiplayer)];
 }
 
 const FIVE = ["W", "U", "B", "R", "G"];
@@ -30,8 +25,9 @@ export function landType(card, cycle) {
 
 const NONBASIC_CAP = { 1: 0, 2: 14, 3: 20, 4: 24, 5: 26 };
 
-export function selectLands({ ranked, cards, colors, shares, total, budget = null, minBasics = 0 }) {
+export function selectLands({ ranked, cards, colors, shares, total, budget = null, minBasics = 0, targets = null }) {
   const nonbasics = [];
+  const sources = Object.fromEntries(colors.map((c) => [c, 0]));
   const reserved = Math.min(total, minBasics * colors.length);
   const cap = Math.min(NONBASIC_CAP[colors.length] ?? 0, total - reserved);
   for (const { name, cycle } of ranked) {
@@ -42,12 +38,12 @@ export function selectLands({ ranked, cards, colors, shares, total, budget = nul
     if (produces.length < 2) continue;
     const price = card.usd == null ? null : Number(card.usd);
     if (budget != null && (price == null || price > budget)) continue;
+    if (targets && !produces.some((c) => sources[c] < targets[c])) continue;
     nonbasics.push({ name: card.name, cycle, produces, price, card });
+    for (const c of produces) sources[c]++;
   }
-  const sources = Object.fromEntries(colors.map((c) => [c, 0]));
-  for (const l of nonbasics) for (const c of l.produces) sources[c]++;
   const active = colors.filter((c) => (shares[c] ?? 0) > 0);
-  const pool = active.length ? active : colors;
+  const pool = targets ? colors : active.length ? active : colors;
   const basics = Object.fromEntries(colors.map((c) => [c, 0]));
   let remaining = total - nonbasics.length;
   for (const c of colors) {
@@ -57,9 +53,10 @@ export function selectLands({ ranked, cards, colors, shares, total, budget = nul
     remaining -= n;
   }
   for (; remaining > 0 && pool.length; remaining--) {
-    let best = pool[0], bestScore = -1;
+    let best = pool[0], bestScore = -Infinity;
+    const short = targets && pool.some((c) => targets[c] > sources[c]);
     for (const c of pool) {
-      const score = (shares[c] || 1) / (sources[c] + 1);
+      const score = short ? targets[c] - sources[c] : ((targets ?? shares)[c] || 1) / (sources[c] + 1);
       if (score > bestScore) [best, bestScore] = [c, score];
     }
     basics[best]++;

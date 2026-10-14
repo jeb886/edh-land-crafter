@@ -34,9 +34,6 @@
             <label>Land count <input id="land-count" type="number" min="30" max="45" placeholder="auto" /></label>
             <label>Max $ per land <input id="budget" type="number" min="0" step="0.5" placeholder="no limit" /></label>
             <label>Min basics per color <input id="min-basics" type="number" min="0" max="15" value="3" /></label>
-            <label class="toggle"><input id="multiplayer" type="checkbox" checked /> Multiplayer</label>
-            <label class="toggle"><input id="original-duals" type="checkbox" /> Original duals</label>
-            <label class="toggle"><input id="fetchlands" type="checkbox" checked /> Fetchlands</label>
           </div>
           <button id="build" type="submit">Build mana base</button>
           <p id="status"></p>
@@ -62,9 +59,10 @@
                 <figure><figcaption>Mana sources</figcaption><div class="pie" id="pie-sources"></div><ul class="legend" id="legend-sources"></ul></figure>
               </div>
               <table id="color-table">
-                <thead><tr><th>Color</th><th>Pips</th><th>Mana share</th><th>Sources</th><th>Needed</th></tr></thead>
+                <thead><tr><th>Color</th><th>Pips</th><th>Target sources</th><th>Sources</th><th>Needed</th></tr></thead>
                 <tbody></tbody>
               </table>
+              <p class="muted small">Use +/− to ask for more or fewer sources of a color; lands are re-picked to match. <button id="reset-targets" type="button" class="link" hidden>Reset targets</button></p>
             </div>
             <div class="panel">
               <h2>Opening hand simulator</h2>

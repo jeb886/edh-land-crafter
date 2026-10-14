@@ -1,6 +1,6 @@
 import { fetchCheapestPrices, fetchCollection, fetchPreferredImages, fetchPrintImages } from "./scryfall.js";
 import { BASICS, COLORS, countPips, deckStats, parseDecklist, sharesFromPips, sourceTargets } from "./deck.js";
-import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, sourceDistribution, withoutBanned, withoutCycles } from "./lands.js";
+import { exportList, flattenRankings, landType, rankForColors, selectLands, sourceDistribution, withoutBanned } from "./lands.js";
 import { simulate } from "./sim.js";
 
 const $ = (id) => document.getElementById(id);
@@ -23,7 +23,9 @@ const BASIC_PRINTS = [
 const BLACKLIST_KEY = "blacklist";
 const loadBlacklist = () => {
   try {
-    const b = JSON.parse(localStorage.getItem(BLACKLIST_KEY) ?? "{}");
+    const stored = localStorage.getItem(BLACKLIST_KEY);
+    if (stored == null) return { names: [], cycles: ["Original duals"] };
+    const b = JSON.parse(stored);
     return { names: b.names ?? [], cycles: b.cycles ?? [] };
   } catch {
     return { names: [], cycles: [] };
@@ -118,7 +120,7 @@ $("deck-form").addEventListener("submit", async (e) => {
     if (!picked.length) document.querySelectorAll("#colors input").forEach((i) => (i.checked = colors.includes(i.value)));
     if (!colors.length) return setStatus("Couldn't detect colors; pick your commander's colors.", "error");
     const pips = countPips(deck);
-    Object.assign(state, { deck, cards, colors, pips, shares: sharesFromPips(pips, colors), stats: deckStats(deck) });
+    Object.assign(state, { deck, cards, colors, pips, shares: sharesFromPips(pips, colors), stats: deckStats(deck), targets: null });
     const deckNames = new Set(entries.map((e) => e.name));
     const missing = notFound.filter((n) => deckNames.has(n));
     setStatus(missing.length ? `Not found on Scryfall: ${missing.join(", ")}` : "", missing.length ? "error" : "ok");
@@ -131,16 +133,16 @@ $("deck-form").addEventListener("submit", async (e) => {
   }
 });
 
-for (const id of ["land-count", "budget", "min-basics", "multiplayer", "original-duals", "fetchlands"]) $(id).addEventListener("change", () => state.deck && render());
+for (const id of ["land-count", "budget", "min-basics"]) $(id).addEventListener("change", () => state.deck && render());
 
 function render() {
   const { deck, cards, colors, pips, shares, stats, ranked } = state;
   const total = Number($("land-count").value) || stats.landCount;
   const budget = $("budget").value === "" ? null : Number($("budget").value);
   const minBasics = Number($("min-basics").value) || 0;
-  const excluded = [["original-duals", "Original duals"], ["fetchlands", "Fetchlands"]].filter(([id]) => !$(id).checked).map(([, cycle]) => cycle);
-  const result = selectLands({ ranked: rankForColors(rankForMode(withoutBanned(withoutCycles(ranked, excluded), blacklist), $("multiplayer").checked), colors), cards, colors, shares, total, budget, minBasics });
-  const targets = sourceTargets(deck, colors, total);
+  const result = selectLands({ ranked: rankForColors(withoutBanned(ranked, blacklist), colors), cards, colors, shares, total, budget, minBasics, targets: state.targets });
+  state.lastSources = result.sources;
+  const needed = sourceTargets(deck, colors, total);
 
   $("results").hidden = false;
   $("empty").hidden = true;
@@ -152,18 +154,14 @@ function render() {
     ...(dist.any ? [{ key: "any", label: "Any color", value: dist.any }] : []),
   ]);
   $("color-table").tBodies[0].innerHTML = colors
-    .map(
-      (c) => `<tr><td class="pip-${c}">${COLOR_NAMES[c]}</td><td>${pips[c].toFixed(1)}</td>
-      <td><input type="range" min="0" max="100" value="${shares[c]}" data-color="${c}" /> <span>${shares[c]}%</span></td>
-      <td>${result.sources[c]}</td><td class="${result.sources[c] >= targets[c] ? "ok" : "error"}">${targets[c]}</td></tr>`,
-    )
+    .map((c) => {
+      const want = state.targets?.[c] ?? result.sources[c];
+      return `<tr><td class="pip-${c}">${COLOR_NAMES[c]}</td><td>${pips[c].toFixed(1)}</td>
+      <td class="stepper"><button type="button" data-color="${c}" data-delta="-1" title="Fewer ${COLOR_NAMES[c]} sources">−</button><span>${want}</span><button type="button" data-color="${c}" data-delta="1" title="More ${COLOR_NAMES[c]} sources">+</button></td>
+      <td class="${state.targets && result.sources[c] !== want ? "warn" : ""}">${result.sources[c]}</td><td class="${result.sources[c] >= needed[c] ? "ok" : "error"}">${needed[c]}</td></tr>`;
+    })
     .join("");
-  document.querySelectorAll("#color-table input[type=range]").forEach((input) =>
-    input.addEventListener("change", () => {
-      state.shares[input.dataset.color] = Number(input.value);
-      render();
-    }),
-  );
+  $("reset-targets").hidden = !state.targets;
 
   const landCount = result.nonbasics.length + Object.values(result.basics).reduce((a, b) => a + b, 0);
   $("land-total").textContent = landCount;
@@ -198,6 +196,19 @@ function render() {
     <p>Opening hand lands: ${sim.openingHand.map((p, n) => `${n}: ${pct(p)}`).join(" · ")}</p>
     <p><small>10,000 simulated games; assumes one land played per turn and no mulligans.</small></p>`;
 }
+
+$("color-table").addEventListener("click", (e) => {
+  const btn = e.target.closest(".stepper button");
+  if (!btn || !state.deck) return;
+  state.targets ??= { ...state.lastSources };
+  const c = btn.dataset.color;
+  state.targets[c] = Math.max(0, state.targets[c] + Number(btn.dataset.delta));
+  render();
+});
+$("reset-targets").addEventListener("click", () => {
+  state.targets = null;
+  render();
+});
 
 $("land-cards").addEventListener("click", (e) => {
   const btn = e.target.closest(".ban button");

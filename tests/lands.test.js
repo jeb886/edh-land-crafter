@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, sourceDistribution, withoutBanned, withoutCycles } from "../site/lands.js";
+import { exportList, flattenRankings, landType, rankForColors, selectLands, sourceDistribution, withoutBanned } from "../site/lands.js";
 import { mulberry32, simulate } from "../site/sim.js";
 
 const land = (name, produced_mana, color_identity = [], usd = "1.00") => ({ name, produced_mana, color_identity, oracle_text: "", usd });
@@ -50,11 +50,6 @@ test("withoutBanned drops blacklisted lands and cycles", () => {
   assert.equal(withoutBanned(r, {}).length, 4);
 });
 
-test("withoutCycles drops excluded cycles", () => {
-  const r = flattenRankings({ lands: [{ name: "Command Tower" }, { cycle: "Original duals", cards: ["Tundra"] }, { cycle: "Fetchlands", cards: ["Flooded Strand"] }] });
-  assert.deepEqual(withoutCycles(r, ["Original duals"]).map((l) => l.name), ["Command Tower", "Flooded Strand"]);
-});
-
 test("selectLands keeps a minimum of basics per color", () => {
   const r = selectLands({ ranked, cards, colors: ["W", "U"], shares: { W: 0, U: 100 }, total: 36, minBasics: 3 });
   assert.equal(r.basics.W, 3);
@@ -63,10 +58,21 @@ test("selectLands keeps a minimum of basics per color", () => {
   assert.equal(tight.nonbasics.length, 1);
 });
 
-test("rankForMode moves multiplayer-only lands last when off", () => {
-  const r = flattenRankings({ lands: [{ name: "A" }, { cycle: "Bond", multiplayer: true, cards: ["B"] }, { name: "C" }] });
-  assert.deepEqual(rankForMode(r, true).map((l) => l.name), ["A", "B", "C"]);
-  assert.deepEqual(rankForMode(r, false).map((l) => l.name), ["A", "C", "B"]);
+test("selectLands targets steer nonbasics and basics toward wanted sources", () => {
+  const base = { ranked, cards, colors: ["W", "U", "B"], shares: { W: 40, U: 40, B: 20 }, total: 36, minBasics: 0 };
+  const plain = selectLands(base);
+  assert.ok(plain.nonbasics.some((l) => l.name === "Watery Grave"));
+  // Black wanted at 0: the UB dual stays (it still helps blue) but no black basics are added.
+  const noBlack = selectLands({ ...base, targets: { W: 20, U: 20, B: 0 } });
+  assert.ok(noBlack.nonbasics.some((l) => l.name === "Watery Grave"));
+  assert.equal(noBlack.basics.B, 0);
+  // A dual helping no color that is short gets skipped for the next land.
+  const full = selectLands({ ...base, targets: { W: 0, U: 0, B: 5 } });
+  assert.ok(!full.nonbasics.some((l) => l.name === "Tundra"));
+  // Raising black above its current sources pulls basics toward it.
+  const moreBlack = selectLands({ ...base, targets: { W: plain.sources.W, U: plain.sources.U, B: plain.sources.B + 5 } });
+  assert.ok(moreBlack.basics.B > plain.basics.B);
+  assert.equal(Object.values(moreBlack.basics).reduce((a, b) => a + b, 0), Object.values(plain.basics).reduce((a, b) => a + b, 0));
 });
 
 test("landType labels five-color lands Prismatic", () => {

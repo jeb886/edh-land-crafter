@@ -36,8 +36,14 @@ label { display: grid; gap: 0.3rem; font-size: 0.9rem; }
 textarea, input, select { font: inherit; background: #262932; color: inherit; border: 1px solid var(--border); border-radius: 6px; padding: 0.45rem 0.55rem; width: 100%; }
 textarea { resize: vertical; font-size: 0.85rem; }
 textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-.toggle { display: inline-flex; align-items: center; gap: 0.45rem; align-self: end; padding-bottom: 0.5rem; }
-.toggle input { width: auto; accent-color: var(--accent); }
+.stepper { white-space: nowrap; }
+.stepper button { margin: 0; padding: 0 0.55rem; font-size: 0.95rem; line-height: 1.5; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 6px; }
+.stepper button:hover { background: var(--accent); border-color: var(--accent); color: #fff; filter: none; }
+.stepper span { display: inline-block; min-width: 2.2rem; text-align: center; font-variant-numeric: tabular-nums; }
+.warn { color: #f0b84a; }
+.small { font-size: 0.8rem; }
+.link { margin: 0 0 0 0.4rem; padding: 0.1rem 0.5rem; font-size: 0.8rem; background: transparent; color: var(--accent); border: 1px solid var(--border); border-radius: 999px; }
+.link:hover { filter: none; background: var(--accent); color: #fff; }
 button { font: inherit; cursor: pointer; background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 0.55rem 1.1rem; font-weight: 600; justify-self: start; margin-top: 0.5rem; }
 button:hover { filter: brightness(1.12); }
 button:disabled { opacity: 0.6; cursor: progress; filter: none; }

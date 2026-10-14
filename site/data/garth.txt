@@ -1,0 +1,62 @@
+1 Abundant Growth
+1 Accelerate
+1 Adric, Mathematical Genius
+1 Aegar, the Freezing Flame
+1 Arcane Denial
+1 Arcane Epiphany
+1 Arcane Signet
+1 Archdruid's Charm
+1 Archmage Emeritus
+1 Black Market Connections
+1 Bootleggers' Stash
+1 Brainstorm
+1 Chilling Trap
+1 Chord of Calling
+1 Citanul Flute
+1 Clone
+1 Confound
+1 Coruscation Mage
+1 Council's Deliberation
+1 Covetous Elegy
+1 Crack Open
+1 Cursed Mirror
+1 Dack's Duplicate
+1 Depths of Desire
+1 Faeburrow Elder
+1 Fellwar Stone
+1 Firefist Adept
+1 Flame of Anor
+1 Generous Plunderer
+1 Goblin Electromancer
+1 Gogo, Master of Mimicry
+1 Grim Bounty
+1 Guttersnipe
+1 Helm of the Host
+1 Illusionist's Bracers
+1 Ixidor's Will
+1 Joo Dee, Public Servant
+1 Kuja, Genome Sorcerer
+1 Lithoform Engine
+1 Mental Modulation
+1 Mirrormind Crown
+1 Myojin of Cryptic Dreams
+1 Mysidian Elder
+1 Nanogene Conversion
+1 Obsessive Search
+1 Papalymo Totolymo
+1 Peek
+1 Prismari, the Inspiration
+1 Psychic Trance
+1 Quandrix, the Proof
+1 Ral, Crackling Wit
+1 Rampant Growth
+1 Rings of Brighthearth
+1 Sol Ring
+1 Storm-Kiln Artist
+1 Stormcatch Mentor
+1 Strionic Resonator
+1 The Destined Black Mage
+1 Vandalblast
+1 Veyran, Voice of Duality
+1 Vivi Ornitier
+1 Garth One-Eye

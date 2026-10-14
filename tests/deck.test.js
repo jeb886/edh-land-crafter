@@ -47,14 +47,21 @@ test("sourcesNeeded grows with pips", () => {
 test("parseDecklist reads the Doran sample deck", async () => {
   const { readFile } = await import("node:fs/promises");
   const entries = parseDecklist(await readFile(new URL("../site/data/doran.txt", import.meta.url), "utf8"));
-  assert.equal(entries.reduce((s, e) => s + e.qty, 0), 100);
+  assert.equal(entries.reduce((s, e) => s + e.qty, 0), 63);
   assert.equal(entries[0].name, "Doran, Besieged by Time");
 });
 
-test("parseDecklist reads the Temur dragons sample deck", async () => {
+test("parseDecklist reads the Miirym sample deck (lands removed, MDFC spells kept)", async () => {
   const { readFile } = await import("node:fs/promises");
-  const entries = parseDecklist(await readFile(new URL("../site/data/temur-dragons.txt", import.meta.url), "utf8"));
-  assert.equal(entries.length, 93);
-  assert.equal(entries.reduce((s, e) => s + e.qty, 0), 100);
+  const entries = parseDecklist(await readFile(new URL("../site/data/miirym.txt", import.meta.url), "utf8"));
+  assert.equal(entries.reduce((s, e) => s + e.qty, 0), 65);
   assert.ok(entries.some((e) => e.name === "Bala Ged Recovery"));
+  assert.ok(!entries.some((e) => /Pathway|Forest|Command Tower/.test(e.name)));
+});
+
+test("parseDecklist reads the Garth sample deck", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const entries = parseDecklist(await readFile(new URL("../site/data/garth.txt", import.meta.url), "utf8"));
+  assert.equal(entries.reduce((s, e) => s + e.qty, 0), 62);
+  assert.ok(entries.some((e) => e.name === "Garth One-Eye"));
 });

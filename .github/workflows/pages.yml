@@ -2,7 +2,7 @@ name: Test and deploy
 
 on:
   push:
-    branches: [main, devin/main]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 

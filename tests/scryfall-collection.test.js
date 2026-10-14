@@ -26,7 +26,8 @@ test("fetchCollection batches by 75, caches, and retries 429", async () => {
   const r = await fetchCollection(names, { fetchImpl, storage, wait: async (ms) => waits.push(ms) });
   assert.equal(r.cards.size, 80);
   assert.deepEqual(calls, [75, 75, 5]);
-  assert.equal(waits.length, 2);
+  const gaps = waits.filter((ms) => ms < 33000);
+  assert.ok(gaps.length >= 2 && gaps.every((ms) => ms > 0 && ms <= 550), JSON.stringify(waits));
   calls.length = 0;
   await fetchCollection(names, { fetchImpl, storage, wait: async () => {} });
   assert.deepEqual(calls, []);
@@ -89,4 +90,15 @@ test("fetchCollection resolves flavor names via fuzzy lookup", async () => {
   const r = await fetchCollection(["Balin's Tomb", "Typo Card"], { fetchImpl, storage: memoryStorage(), wait: async () => {} });
   assert.equal(r.cards.get("balin's tomb").name, "Ancient Tomb");
   assert.deepEqual(r.notFound, ["Typo Card"]);
+});
+
+test("429 responses back off for at least 30 s before retrying", async () => {
+  let calls = 0;
+  const waits = [];
+  const fetchImpl = async () => (++calls === 1
+    ? { ok: false, status: 429, headers: { get: () => "5" } }
+    : { ok: true, status: 200, json: async () => ({ data: [{ name: "Command Tower", type_line: "Land", prices: {} }], not_found: [] }) });
+  await fetchCollection(["Command Tower"], { fetchImpl, storage: memoryStorage(), wait: async (ms) => waits.push(ms) });
+  assert.equal(calls, 2);
+  assert.ok(waits.some((ms) => ms >= 33000), JSON.stringify(waits));
 });

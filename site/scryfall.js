@@ -1,13 +1,29 @@
 export const SCRYFALL_API = "https://api.scryfall.com";
 const BATCH = 75;
 const CACHE_MS = 24 * 60 * 60 * 1000;
-const GAP_MS = 500;
+// Scryfall allows 2 requests/second (500 ms) on /cards/*; we keep a 10% margin and
+// serialize every request through one queue so parallel lookups can't overlap.
+const GAP_MS = 550;
+const LIMITED_MS = 33000; // a 429 limits access for 30 s; wait that out (+10%) before retrying
+
+let queue = Promise.resolve();
+let lastRequestAt = -Infinity;
+function throttled(fetchImpl, wait, url, init) {
+  const run = queue.then(async () => {
+    const due = lastRequestAt + GAP_MS - Date.now();
+    if (due > 0) await wait(due);
+    lastRequestAt = Date.now();
+    return fetchImpl(url, init);
+  });
+  queue = run.catch(() => {});
+  return run;
+}
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export async function fetchCard(name, fetchImpl = fetch) {
   const url = `${SCRYFALL_API}/cards/named?exact=${encodeURIComponent(name)}`;
-  const res = await fetchImpl(url, { headers: { Accept: "application/json" } });
+  const res = await throttled(fetchImpl, sleep, url, { headers: { Accept: "application/json" } });
   if (!res.ok) {
     throw new Error(`Scryfall request failed: ${res.status}`);
   }
@@ -62,11 +78,11 @@ const postWithRetry = (body, fetchImpl, wait) =>
 
 async function requestWithRetry(url, init, fetchImpl, wait, emptyOn404 = false) {
   for (let attempt = 0; ; attempt++) {
-    const res = await fetchImpl(url, init);
+    const res = await throttled(fetchImpl, wait, url, init);
     if (emptyOn404 && res.status === 404) return { data: [] };
     if (res.status === 429 && attempt < 3) {
       const retryAfter = Number(res.headers?.get?.("Retry-After"));
-      await wait(retryAfter > 0 ? retryAfter * 1000 : 2000 * 2 ** attempt);
+      await wait(Math.max(retryAfter > 0 ? retryAfter * 1100 : 0, LIMITED_MS));
       continue;
     }
     if (!res.ok) throw new Error(`Scryfall request failed: ${res.status}`);
@@ -90,7 +106,6 @@ export async function fetchCollection(names, opts = {}) {
   }
   const notFound = [];
   for (let i = 0; i < missing.length; i += BATCH) {
-    if (i > 0) await wait(GAP_MS);
     const batch = missing.slice(i, i + BATCH);
     const data = await postWithRetry({ identifiers: batch.map((name) => ({ name })) }, fetchImpl, wait);
     const byName = new Map();
@@ -112,9 +127,8 @@ export async function fetchCollection(names, opts = {}) {
   // Universes Beyond flavor names (e.g. "Balin's Tomb" = Ancient Tomb) only resolve via fuzzy lookup.
   const unresolved = [];
   for (const name of notFound) {
-    await wait(GAP_MS);
     const url = `${SCRYFALL_API}/cards/named?fuzzy=${encodeURIComponent(name)}`;
-    const res = await fetchImpl(url, { headers: { Accept: "application/json" } });
+    const res = await throttled(fetchImpl, wait, url, { headers: { Accept: "application/json" } });
     const raw = res.ok ? await res.json() : null;
     const matches = (s) => s?.toLowerCase() === name.toLowerCase();
     if (raw && (matches(raw.flavor_name) || matches(raw.name) || raw.card_faces?.some((f) => matches(f.flavor_name) || matches(f.name)))) {
@@ -153,7 +167,6 @@ async function searchByName(names, filter, pick, cacheKey, opts = {}) {
     else missing.push(name);
   }
   for (let i = 0; i < missing.length; i += PRICE_BATCH) {
-    if (i > 0) await wait(GAP_MS);
     const batch = missing.slice(i, i + PRICE_BATCH);
     const q = `${filter} (${batch.map((n) => `!"${n.replace(/"/g, "")}"`).join(" or ")})`;
     const found = new Map();
@@ -166,7 +179,6 @@ async function searchByName(names, filter, pick, cacheKey, opts = {}) {
         for (const f of raw.card_faces ?? []) found.set(f.name.toLowerCase(), value);
       }
       url = data.has_more ? data.next_page : null;
-      if (url) await wait(GAP_MS);
     }
     for (const name of batch) {
       const value = found.get(name.toLowerCase()) ?? null;
@@ -189,7 +201,6 @@ export async function fetchPrintImages(prints, opts = {}) {
     else missing.push(p);
   }
   for (let i = 0; i < missing.length; i += BATCH) {
-    if (i > 0) await wait(GAP_MS);
     const batch = missing.slice(i, i + BATCH);
     const data = await postWithRetry({ identifiers: batch.map(({ set, collector_number }) => ({ set, collector_number })) }, fetchImpl, wait);
     for (const raw of data.data ?? []) {

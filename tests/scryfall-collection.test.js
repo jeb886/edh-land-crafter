@@ -43,7 +43,7 @@ test("fetchCheapestPrices searches game:paper cheapest:usd and caches", async ()
   assert.equal(p.get("steam vents"), "9.60");
   assert.equal(p.get("missing land"), null);
   assert.equal(p.get("foil only"), "2.66");
-  assert.match(urls[0], /\/cards\/search\?q=game:paper cheapest:usd \(!"Steam Vents" or !"Missing Land"\)/);
+  assert.match(urls[0], /\/cards\/search\?q=game:paper cheapest:usd \(!"Steam Vents" or !"Missing Land" or !"Foil Only"\)/);
   await fetchCheapestPrices(["Steam Vents", "Missing Land", "Foil Only"], { fetchImpl, storage, wait: async () => {} });
   assert.equal(urls.length, 1);
 });

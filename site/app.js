@@ -36,6 +36,9 @@ $("deck-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const entries = parseDecklist($("decklist").value);
   if (!entries.length) return setStatus("Paste a decklist first.", "error");
+  const button = $("build");
+  button.disabled = true;
+  button.textContent = "Building…";
   setStatus("Looking up cards on Scryfall…");
   try {
     const ranked = await loadRankings();
@@ -63,6 +66,9 @@ $("deck-form").addEventListener("submit", async (e) => {
     render();
   } catch (err) {
     setStatus(`Scryfall lookup failed (${err.message}). Try again in a minute.`, "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Build mana base";
   }
 });
 

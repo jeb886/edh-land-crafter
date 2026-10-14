@@ -78,3 +78,15 @@ test("fetchPrintImages looks up set/collector_number and caches", async () => {
   assert.equal((await fetchPrintImages(prints, { fetchImpl, storage, wait: async () => {} })).get("forest"), "f.jpg");
   assert.equal(bodies.length, 1);
 });
+
+test("fetchCollection resolves flavor names via fuzzy lookup", async () => {
+  const fetchImpl = async (url, init) => {
+    if (init?.body) return { ok: true, status: 200, json: async () => ({ data: [], not_found: [] }) };
+    const q = decodeURIComponent(url.split("fuzzy=")[1]);
+    if (q === "Balin's Tomb") return { ok: true, status: 200, json: async () => ({ name: "Ancient Tomb", flavor_name: "Balin's Tomb", type_line: "Land", prices: {} }) };
+    return { ok: true, status: 200, json: async () => ({ name: "Something Else", type_line: "Land", prices: {} }) };
+  };
+  const r = await fetchCollection(["Balin's Tomb", "Typo Card"], { fetchImpl, storage: memoryStorage(), wait: async () => {} });
+  assert.equal(r.cards.get("balin's tomb").name, "Ancient Tomb");
+  assert.deepEqual(r.notFound, ["Typo Card"]);
+});

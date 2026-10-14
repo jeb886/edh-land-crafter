@@ -109,7 +109,21 @@ export async function fetchCollection(names, opts = {}) {
       writeEntry(storage, key(name), { t: now, card });
     }
   }
-  return { cards, notFound };
+  // Universes Beyond flavor names (e.g. "Balin's Tomb" = Ancient Tomb) only resolve via fuzzy lookup.
+  const unresolved = [];
+  for (const name of notFound) {
+    await wait(GAP_MS);
+    const url = `${SCRYFALL_API}/cards/named?fuzzy=${encodeURIComponent(name)}`;
+    const res = await fetchImpl(url, { headers: { Accept: "application/json" } });
+    const raw = res.ok ? await res.json() : null;
+    const matches = (s) => s?.toLowerCase() === name.toLowerCase();
+    if (raw && (matches(raw.flavor_name) || matches(raw.name) || raw.card_faces?.some((f) => matches(f.flavor_name) || matches(f.name)))) {
+      const card = slim(raw);
+      cards.set(name.toLowerCase(), card);
+      writeEntry(storage, key(name), { t: now, card });
+    } else unresolved.push(name);
+  }
+  return { cards, notFound: unresolved };
 }
 
 const PRICE_BATCH = 20;

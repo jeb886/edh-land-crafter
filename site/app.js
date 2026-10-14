@@ -28,7 +28,7 @@ function setStatus(text, cls = "") {
 }
 
 async function loadRankings() {
-  state.ranked ??= flattenRankings(await (await fetch("data/land-rankings.json")).json());
+  state.ranked ??= flattenRankings(await (await fetch("data/land-rankings.json", { cache: "no-cache" })).json());
   return state.ranked;
 }
 

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { exportList, flattenRankings, selectLands } from "../site/lands.js";
+import { exportList, flattenRankings, rankForMode, selectLands } from "../site/lands.js";
 import { mulberry32, simulate } from "../site/sim.js";
 
 const land = (name, produced_mana, color_identity = [], usd = "1.00") => ({ name, produced_mana, color_identity, oracle_text: "", usd });
@@ -28,6 +28,12 @@ test("selectLands keeps a minimum of basics per color", () => {
   assert.equal(r.nonbasics.length + r.basics.W + r.basics.U, 36);
   const tight = selectLands({ ranked, cards, colors: ["W", "U"], shares: { W: 50, U: 50 }, total: 7, minBasics: 3 });
   assert.equal(tight.nonbasics.length, 1);
+});
+
+test("rankForMode moves multiplayer-only lands last when off", () => {
+  const r = flattenRankings({ lands: [{ name: "A" }, { cycle: "Bond", multiplayer: true, cards: ["B"] }, { name: "C" }] });
+  assert.deepEqual(rankForMode(r, true).map((l) => l.name), ["A", "B", "C"]);
+  assert.deepEqual(rankForMode(r, false).map((l) => l.name), ["A", "C", "B"]);
 });
 
 test("simulate reports land drops", () => {

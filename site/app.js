@@ -1,6 +1,6 @@
 import { fetchCollection } from "./scryfall.js";
 import { BASICS, COLORS, countPips, deckStats, parseDecklist, sharesFromPips, sourceTargets } from "./deck.js";
-import { exportList, flattenRankings, selectLands } from "./lands.js";
+import { exportList, flattenRankings, rankForMode, selectLands } from "./lands.js";
 import { simulate } from "./sim.js";
 
 const $ = (id) => document.getElementById(id);
@@ -47,14 +47,14 @@ $("deck-form").addEventListener("submit", async (e) => {
   }
 });
 
-for (const id of ["land-count", "budget", "min-basics"]) $(id).addEventListener("change", () => state.deck && render());
+for (const id of ["land-count", "budget", "min-basics", "multiplayer"]) $(id).addEventListener("change", () => state.deck && render());
 
 function render() {
   const { deck, cards, colors, pips, shares, stats, ranked } = state;
   const total = Number($("land-count").value) || stats.landCount;
   const budget = $("budget").value === "" ? null : Number($("budget").value);
   const minBasics = Number($("min-basics").value) || 0;
-  const result = selectLands({ ranked, cards, colors, shares, total, budget, minBasics });
+  const result = selectLands({ ranked: rankForMode(ranked, $("multiplayer").checked), cards, colors, shares, total, budget, minBasics });
   const targets = sourceTargets(deck, colors, total);
 
   $("results").hidden = false;

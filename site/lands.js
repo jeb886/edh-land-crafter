@@ -3,9 +3,13 @@ import { BASICS, landColors } from "./deck.js";
 export function flattenRankings(rankings) {
   const out = [];
   for (const entry of rankings.lands) {
-    for (const name of entry.cards ?? [entry.name]) out.push({ name, cycle: entry.cycle ?? null });
+    for (const name of entry.cards ?? [entry.name]) out.push({ name, cycle: entry.cycle ?? null, multiplayer: !!entry.multiplayer });
   }
   return out;
+}
+
+export function rankForMode(ranked, multiplayer) {
+  return multiplayer ? ranked : [...ranked.filter((l) => !l.multiplayer), ...ranked.filter((l) => l.multiplayer)];
 }
 
 const NONBASIC_CAP = { 1: 0, 2: 14, 3: 20, 4: 24, 5: 26 };

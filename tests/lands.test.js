@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, withoutCycles } from "../site/lands.js";
+import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, withoutBanned, withoutCycles } from "../site/lands.js";
 import { mulberry32, simulate } from "../site/sim.js";
 
 const land = (name, produced_mana, color_identity = [], usd = "1.00") => ({ name, produced_mana, color_identity, oracle_text: "", usd });
@@ -33,6 +33,12 @@ test("rankForColors lifts fiveColor lands only for four- and five-color decks", 
   assert.deepEqual(rankForColors(r, ["W", "U", "B", "R", "G"]).map((l) => l.name), ["Command Tower", "Mana Confluence", "Steam Vents"]);
   assert.deepEqual(rankForColors(r, ["U", "B", "R", "G"]).map((l) => l.name), ["Command Tower", "Mana Confluence", "Steam Vents"]);
   assert.deepEqual(rankForColors(r, ["U", "R", "G"]).map((l) => l.name), ["Command Tower", "Steam Vents", "Mana Confluence"]);
+});
+
+test("withoutBanned drops blacklisted lands and cycles", () => {
+  const r = flattenRankings({ lands: [{ name: "Command Tower" }, { cycle: "Shocklands", cards: ["Steam Vents", "Blood Crypt"] }, { name: "Exotic Orchard" }] });
+  assert.deepEqual(withoutBanned(r, { names: ["Exotic Orchard"], cycles: ["Shocklands"] }).map((l) => l.name), ["Command Tower"]);
+  assert.equal(withoutBanned(r, {}).length, 4);
 });
 
 test("withoutCycles drops excluded cycles", () => {

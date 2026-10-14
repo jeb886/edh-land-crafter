@@ -9,6 +9,8 @@ export function flattenRankings(rankings) {
 }
 
 export const withoutCycles = (ranked, cycles) => ranked.filter((l) => !cycles.includes(l.cycle));
+export const withoutBanned = (ranked, { names = [], cycles = [] }) =>
+  ranked.filter((l) => !names.includes(l.name) && !(l.cycle && cycles.includes(l.cycle)));
 
 export function rankForColors(ranked, colors) {
   return colors.length < 4 ? ranked : [...ranked.filter((l) => l.fiveColor), ...ranked.filter((l) => !l.fiveColor)];

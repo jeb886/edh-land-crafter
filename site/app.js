@@ -1,6 +1,6 @@
 import { fetchCheapestPrices, fetchCollection, fetchPreferredImages, fetchPrintImages } from "./scryfall.js";
 import { BASICS, COLORS, countPips, deckStats, parseDecklist, sharesFromPips, sourceTargets } from "./deck.js";
-import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, withoutCycles } from "./lands.js";
+import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, withoutBanned, withoutCycles } from "./lands.js";
 import { simulate } from "./sim.js";
 
 const $ = (id) => document.getElementById(id);
@@ -19,6 +19,43 @@ const BASIC_PRINTS = [
   { set: "fra", collector_number: "290" },
   { set: "ogw", collector_number: "183a" },
 ];
+
+const BLACKLIST_KEY = "blacklist";
+const loadBlacklist = () => {
+  try {
+    const b = JSON.parse(localStorage.getItem(BLACKLIST_KEY) ?? "{}");
+    return { names: b.names ?? [], cycles: b.cycles ?? [] };
+  } catch {
+    return { names: [], cycles: [] };
+  }
+};
+const blacklist = loadBlacklist();
+const saveBlacklist = () => localStorage.setItem(BLACKLIST_KEY, JSON.stringify(blacklist));
+const esc = (s) => s.replace(/"/g, "&quot;");
+function renderBlacklist() {
+  const item = (kind, value, label) => `<li><button type="button" class="unban" data-kind="${kind}" data-value="${esc(value)}" title="Remove from blacklist">✕</button> ${label}</li>`;
+  $("blacklist").innerHTML = [
+    ...blacklist.cycles.map((c) => item("cycles", c, `<b>${c}</b> (whole cycle)`)),
+    ...blacklist.names.map((n) => item("names", n, n)),
+  ].join("");
+  $("blacklist-total").textContent = blacklist.cycles.length + blacklist.names.length;
+}
+function ban(kind, value) {
+  if (!blacklist[kind].includes(value)) blacklist[kind].push(value);
+  saveBlacklist();
+  renderBlacklist();
+  if (state.deck) render();
+}
+$("blacklist").addEventListener("click", (e) => {
+  const btn = e.target.closest(".unban");
+  if (!btn) return;
+  const { kind, value } = btn.dataset;
+  blacklist[kind] = blacklist[kind].filter((v) => v !== value);
+  saveBlacklist();
+  renderBlacklist();
+  if (state.deck) render();
+});
+renderBlacklist();
 
 const pct = (x) => `${Math.round(x * 100)}%`;
 
@@ -80,7 +117,7 @@ function render() {
   const budget = $("budget").value === "" ? null : Number($("budget").value);
   const minBasics = Number($("min-basics").value) || 0;
   const excluded = [["original-duals", "Original duals"], ["fetchlands", "Fetchlands"]].filter(([id]) => !$(id).checked).map(([, cycle]) => cycle);
-  const result = selectLands({ ranked: rankForColors(rankForMode(withoutCycles(ranked, excluded), $("multiplayer").checked), colors), cards, colors, shares, total, budget, minBasics });
+  const result = selectLands({ ranked: rankForColors(rankForMode(withoutBanned(withoutCycles(ranked, excluded), blacklist), $("multiplayer").checked), colors), cards, colors, shares, total, budget, minBasics });
   const targets = sourceTargets(deck, colors, total);
 
   $("results").hidden = false;
@@ -111,12 +148,17 @@ function render() {
   ].join("");
   $("export").value = exportList(result);
   const money = (usd) => (usd == null ? "" : `<i class="price">$${Number(usd).toFixed(2)}</i>`);
-  const tile = (card, label, type, count = 1) =>
-    `<a class="tile" href="${card?.scryfall_uri ?? "#"}" target="_blank" rel="noopener" title="${label}">
+  const tile = (card, label, type, count = 1, cycle = null) =>
+    `<div class="tile"><a href="${card?.scryfall_uri ?? "#"}" target="_blank" rel="noopener" title="${label}">
       ${card?.image ? `<img src="${card.image}" alt="${label}" loading="lazy" />` : `<span>${label}</span>`}
-      ${count > 1 ? `<b>×${count}</b>` : ""}${money(card?.usd)}<small>${type}</small></a>`;
+      ${count > 1 ? `<b>×${count}</b>` : ""}${money(card?.usd)}</a>
+      ${count > 1 ? `<small>${type}</small>` : `<div class="ban">
+        <button type="button" data-kind="names" data-value="${esc(label)}" title="Never pick ${esc(label)}">✕</button>
+        <small>${type}</small>
+        ${cycle ? `<button type="button" data-kind="cycles" data-value="${esc(cycle)}" title="Never pick any ${esc(cycle)}">✕ Cycle</button>` : "<span></span>"}
+      </div>`}</div>`;
   $("land-cards").innerHTML = [
-    ...result.nonbasics.map((l) => tile(l.card, l.name, landType(l.card, l.cycle))),
+    ...result.nonbasics.map((l) => tile(l.card, l.name, landType(l.card, l.cycle), 1, l.cycle)),
     ...Object.entries(result.basics).filter(([, n]) => n).map(([c, n]) => tile(cards.get(BASICS[c].toLowerCase()), BASICS[c], "Basic", n)),
   ].join("");
 
@@ -128,6 +170,11 @@ function render() {
     <p>Opening hand lands: ${sim.openingHand.map((p, n) => `${n}: ${pct(p)}`).join(" · ")}</p>
     <p><small>10,000 simulated games; assumes one land played per turn and no mulligans.</small></p>`;
 }
+
+$("land-cards").addEventListener("click", (e) => {
+  const btn = e.target.closest(".ban button");
+  if (btn) ban(btn.dataset.kind, btn.dataset.value);
+});
 
 $("copy").addEventListener("click", () => navigator.clipboard.writeText($("export").value));
 
@@ -150,6 +197,13 @@ const loadExample = (replace) =>
     .then((r) => (r.ok ? r.text() : ""))
     .then((text) => {
       if (text && (replace || !$("decklist").value)) $("decklist").value = text;
+      if (replace) {
+        state.deck = null;
+        $("results").hidden = true;
+        $("empty").hidden = false;
+        setStatus("");
+        document.querySelectorAll("#colors input").forEach((i) => (i.checked = false));
+      }
     });
 loadExample(false);
 $("example").addEventListener("change", () => loadExample(true));

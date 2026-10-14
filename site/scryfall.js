@@ -163,7 +163,7 @@ async function searchByName(names, filter, pick, cacheKey, opts = {}) {
   const missing = [];
   for (const name of new Set(names)) {
     const hit = readEntry(storage, cacheKey(name), now);
-    if (hit) results.set(name.toLowerCase(), hit.value);
+    if (hit?.value != null) results.set(name.toLowerCase(), hit.value);
     else missing.push(name);
   }
   for (let i = 0; i < missing.length; i += PRICE_BATCH) {
@@ -183,7 +183,7 @@ async function searchByName(names, filter, pick, cacheKey, opts = {}) {
     for (const name of batch) {
       const value = found.get(name.toLowerCase()) ?? null;
       results.set(name.toLowerCase(), value);
-      writeEntry(storage, cacheKey(name), { t: now, value });
+      if (value != null) writeEntry(storage, cacheKey(name), { t: now, value });
     }
   }
   return results;

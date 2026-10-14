@@ -46,7 +46,8 @@ test("fetchCheapestPrices searches game:paper cheapest:usd and caches", async ()
   assert.equal(p.get("foil only"), "2.66");
   assert.match(urls[0], /\/cards\/search\?q=game:paper cheapest:usd \(!"Steam Vents" or !"Missing Land" or !"Foil Only"\)/);
   await fetchCheapestPrices(["Steam Vents", "Missing Land", "Foil Only"], { fetchImpl, storage, wait: async () => {} });
-  assert.equal(urls.length, 1);
+  assert.equal(urls.length, 2);
+  assert.match(urls[1], /\(!"Missing Land"\)/);
 });
 
 test("fetchCheapestPrices treats 404 as no matches", async () => {
@@ -101,4 +102,19 @@ test("429 responses back off for at least 30 s before retrying", async () => {
   await fetchCollection(["Command Tower"], { fetchImpl, storage: memoryStorage(), wait: async (ms) => waits.push(ms) });
   assert.equal(calls, 2);
   assert.ok(waits.some((ms) => ms >= 33000), JSON.stringify(waits));
+});
+
+test("empty price results are not cached and stale empty entries are retried", async () => {
+  const storage = memoryStorage();
+  storage.setItem("sfp:command tower", JSON.stringify({ t: Date.now(), value: null }));
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls++;
+    return { ok: true, status: 200, json: async () => ({ data: calls === 1 ? [] : [{ name: "Command Tower", prices: { usd: "0.18" } }] }) };
+  };
+  const first = await fetchCheapestPrices(["Command Tower"], { fetchImpl, storage, wait: async () => {} });
+  assert.equal(first.get("command tower"), null);
+  const second = await fetchCheapestPrices(["Command Tower"], { fetchImpl, storage, wait: async () => {} });
+  assert.equal(second.get("command tower"), "0.18");
+  assert.equal(calls, 2);
 });

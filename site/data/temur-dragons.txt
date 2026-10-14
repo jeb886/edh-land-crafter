@@ -1,0 +1,93 @@
+1 Arcane Signet
+1 Atarka, World Render
+1 Bala Ged Recovery // Bala Ged Sanctuary
+1 Barkchannel Pathway // Tidechannel Pathway
+1 Beast Within
+1 Birds of Paradise
+1 Blasphemous Act
+1 Bonehoard Dracosaur
+1 Boseiju, Who Endures
+1 Breeding Pool
+1 Command Beacon
+1 Command Tower
+1 Commercial District
+1 Cragcrown Pathway // Timbercrown Pathway
+1 Crucible of Fire
+1 Cryptic Gateway
+1 Cultivate
+1 Defense of the Heart
+1 Desolation of Smaug
+1 Dragon Tempest
+1 Dragon's Hoard
+1 Dragonborn Champion
+1 Dragonhawk, Fate's Tempest
+1 Dragonlord's Servant
+1 Dragonspeaker Shaman
+1 Drakuseth, Maw of Flames
+1 Exotic Orchard
+1 Fabled Passage
+1 Faithless Looting
+1 Fauna Shaman
+3 Forest
+1 Ganax, Astral Hunter
+1 Garruk's Uprising
+1 Goldspan Dragon
+1 Haven of the Spirit Dragon
+1 Heroic Intervention
+1 Hull Breach
+1 Hunter's Insight
+3 Island
+1 Karakyk Guardian
+1 Ketria Triome
+1 Kiora, Behemoth Beckoner
+1 Korlessa, Scale Singer
+1 Lathliss, Dragon Queen
+1 Lightning Greaves
+1 Lozhan, Dragons' Legacy
+1 Maelstrom of the Spirit Dragon
+1 Marang River Regent // Coil and Catch
+1 Miirym, Sentinel Wyrm
+1 Misty Rainforest
+1 Monster Manual // Zoological Study
+4 Mountain
+1 Nature's Lore
+1 Oviya, Automech Artisan
+1 Parapet Thrasher
+1 Path of Ancestry
+1 Prismatic Vista
+1 Rapacious Dragon
+1 Rapid Hybridization
+1 Regrowth
+1 Rejuvenating Springs
+1 Return of the Wildspeaker
+1 Riverglide Pathway // Lavaglide Pathway
+1 Rockfall Vale
+1 Sagu Wildling // Roost Seek
+1 Sakura-Tribe Elder
+1 Savage Ventmaw
+1 Scalding Tarn
+1 Shivan Reef
+1 Smaug the Magnificent
+1 Sneak Attack
+1 Sol Ring
+1 Somberwald Sage
+1 Spire Garden
+1 Steam Vents
+1 Steel Hellkite
+1 Stomping Ground
+1 Stormcarved Coast
+1 Sword of Forge and Frontier
+1 Sword of Hearth and Home
+1 Sylvan Library
+1 Temur Ascendancy
+1 Temur Battlecrier
+1 Terror of the Peaks
+1 Thrakkus the Butcher
+1 Thunder Dragon
+1 Training Center
+1 Urza's Incubator
+1 Utvara Hellkite
+1 Valakut Awakening // Valakut Stoneforge
+1 Whirlwing Stormbrood // Dynamic Soar
+1 Wooded Foothills
+1 Wrathful Red Dragon

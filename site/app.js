@@ -1,6 +1,6 @@
 import { fetchCollection } from "./scryfall.js";
 import { BASICS, COLORS, countPips, deckStats, parseDecklist, sharesFromPips, sourceTargets } from "./deck.js";
-import { exportList, flattenRankings, rankForMode, selectLands } from "./lands.js";
+import { exportList, flattenRankings, landType, rankForMode, selectLands } from "./lands.js";
 import { simulate } from "./sim.js";
 
 const $ = (id) => document.getElementById(id);
@@ -78,18 +78,18 @@ function render() {
   $("land-list").innerHTML = [
     ...result.nonbasics.map(
       (l) => `<li><a href="${l.card.scryfall_uri}" target="_blank" rel="noopener" data-image="${l.card.image ?? ""}">${l.name}</a>
-        <small>${l.cycle ?? ""} ${l.price == null ? "" : `$${l.price.toFixed(2)}`}</small></li>`,
+        <small>${landType(l.card, l.cycle)} ${l.price == null ? "" : `$${l.price.toFixed(2)}`}</small></li>`,
     ),
     ...Object.entries(result.basics).filter(([, n]) => n).map(([c, n]) => `<li>${n} ${BASICS[c]}</li>`),
   ].join("");
   $("export").value = exportList(result);
-  const tile = (card, label, count = 1) =>
+  const tile = (card, label, type, count = 1) =>
     `<a class="tile" href="${card?.scryfall_uri ?? "#"}" target="_blank" rel="noopener" title="${label}">
       ${card?.image ? `<img src="${card.image}" alt="${label}" loading="lazy" />` : `<span>${label}</span>`}
-      ${count > 1 ? `<b>×${count}</b>` : ""}</a>`;
+      ${count > 1 ? `<b>×${count}</b>` : ""}<small>${type}</small></a>`;
   $("land-cards").innerHTML = [
-    ...result.nonbasics.map((l) => tile(l.card, l.name)),
-    ...Object.entries(result.basics).filter(([, n]) => n).map(([c, n]) => tile(cards.get(BASICS[c].toLowerCase()), BASICS[c], n)),
+    ...result.nonbasics.map((l) => tile(l.card, l.name, landType(l.card, l.cycle))),
+    ...Object.entries(result.basics).filter(([, n]) => n).map(([c, n]) => tile(cards.get(BASICS[c].toLowerCase()), BASICS[c], "Basic", n)),
   ].join("");
 
   const lands = [...result.nonbasics.map((l) => l.produces), ...Object.entries(result.basics).flatMap(([c, n]) => Array(n).fill([c]))];

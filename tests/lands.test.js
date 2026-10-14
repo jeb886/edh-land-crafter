@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { exportList, flattenRankings, rankForMode, selectLands } from "../site/lands.js";
+import { exportList, flattenRankings, landType, rankForMode, selectLands } from "../site/lands.js";
 import { mulberry32, simulate } from "../site/sim.js";
 
 const land = (name, produced_mana, color_identity = [], usd = "1.00") => ({ name, produced_mana, color_identity, oracle_text: "", usd });
@@ -34,6 +34,13 @@ test("rankForMode moves multiplayer-only lands last when off", () => {
   const r = flattenRankings({ lands: [{ name: "A" }, { cycle: "Bond", multiplayer: true, cards: ["B"] }, { name: "C" }] });
   assert.deepEqual(rankForMode(r, true).map((l) => l.name), ["A", "B", "C"]);
   assert.deepEqual(rankForMode(r, false).map((l) => l.name), ["A", "C", "B"]);
+});
+
+test("landType labels five-color lands Prismatic", () => {
+  assert.equal(landType(land("Command Tower", ["W", "U", "B", "R", "G"]), null), "Prismatic");
+  assert.equal(landType({ produced_mana: [], oracle_text: "Search your library for a basic land card" }, null), "Prismatic");
+  assert.equal(landType({ produced_mana: [], oracle_text: "Search your library for a Forest or Island card" }, "Fetchlands"), "Fetchlands");
+  assert.equal(landType(land("Breeding Pool", ["G", "U"]), "Shocklands"), "Shocklands");
 });
 
 test("simulate reports land drops", () => {

@@ -12,6 +12,14 @@ export function rankForMode(ranked, multiplayer) {
   return multiplayer ? ranked : [...ranked.filter((l) => !l.multiplayer), ...ranked.filter((l) => l.multiplayer)];
 }
 
+const FIVE = ["W", "U", "B", "R", "G"];
+
+export function landType(card, cycle) {
+  const fetchesAnyBasic = /search your library for a basic land card/i.test(card.oracle_text) && !/Plains|Island|Swamp|Mountain|Forest/.test(card.oracle_text);
+  if (FIVE.every((c) => card.produced_mana.includes(c)) || fetchesAnyBasic) return "Prismatic";
+  return cycle ?? "";
+}
+
 const NONBASIC_CAP = { 1: 0, 2: 14, 3: 20, 4: 24, 5: 26 };
 
 export function selectLands({ ranked, cards, colors, shares, total, budget = null, minBasics = 0 }) {

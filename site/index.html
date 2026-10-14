@@ -4,14 +4,51 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>EDH Land Crafter</title>
+    <link rel="preconnect" href="https://api.scryfall.com" />
+    <link rel="preconnect" href="https://cards.scryfall.io" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main>
       <h1>EDH Land Crafter</h1>
-      <p>Craft mana bases for your Commander decks.</p>
-      <p>Scryfall API: <span id="status">checking…</span></p>
+      <p>Paste your decklist and get a mana base that matches your deck's colored pips.</p>
+
+      <form id="deck-form">
+        <fieldset>
+          <legend>Commander colors (leave blank to detect from the deck)</legend>
+          <div id="colors"></div>
+        </fieldset>
+        <label>Decklist
+          <textarea id="decklist" rows="12" placeholder="1 Atraxa, Praetors' Voice&#10;1 Sol Ring&#10;..."></textarea>
+        </label>
+        <div class="row">
+          <label>Land count <input id="land-count" type="number" min="30" max="45" placeholder="auto" /></label>
+          <label>Max price per land ($) <input id="budget" type="number" min="0" step="0.5" placeholder="no limit" /></label>
+        </div>
+        <button type="submit">Build mana base</button>
+        <p id="status"></p>
+      </form>
+
+      <section id="results" hidden>
+        <h2>Deck analysis</h2>
+        <p id="stats"></p>
+        <table id="color-table">
+          <thead><tr><th>Color</th><th>Pips</th><th>Mana share</th><th>Sources</th><th>Needed (90% on curve)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+
+        <h2>Lands (<span id="land-total"></span>)</h2>
+        <ul id="land-list"></ul>
+
+        <h2>Export</h2>
+        <textarea id="export" rows="10" readonly></textarea>
+        <button id="copy" type="button">Copy list</button>
+
+        <h2>Opening hand simulator</h2>
+        <div id="sim"></div>
+      </section>
     </main>
+    <img id="preview" alt="" hidden />
     <footer>
       <p>
         Card data and images from <a href="https://scryfall.com">Scryfall</a>.

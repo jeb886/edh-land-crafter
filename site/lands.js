@@ -68,6 +68,16 @@ export function selectLands({ ranked, cards, colors, shares, total, budget = nul
   return { nonbasics, basics, sources };
 }
 
+export function sourceDistribution({ nonbasics, basics }, colors) {
+  const out = Object.fromEntries(colors.map((c) => [c, basics[c] ?? 0]));
+  out.any = 0;
+  for (const l of nonbasics) {
+    if (colors.length > 1 && colors.every((c) => l.produces.includes(c))) out.any++;
+    else for (const c of l.produces) out[c]++;
+  }
+  return out;
+}
+
 export function exportList({ nonbasics, basics }) {
   const lines = nonbasics.map((l) => `1 ${l.name}`);
   for (const [c, n] of Object.entries(basics)) if (n) lines.push(`${n} ${BASICS[c]}`);

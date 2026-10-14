@@ -64,6 +64,14 @@ td input[type=range] { width: 6rem; vertical-align: middle; accent-color: var(--
 .ban small { margin-top: 0; }
 .ban button { margin: 0; padding: 0.1rem 0.45rem; font-size: 0.7rem; font-weight: 500; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; }
 .ban button:hover { color: #fff; background: #b33; border-color: #b33; filter: none; }
+.pies { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.75rem 0 1rem; }
+.pies figure { margin: 0; display: grid; justify-items: center; gap: 0.6rem; }
+.pies figcaption { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.pie { width: 130px; height: 130px; border-radius: 50%; border: 2px solid var(--border); }
+.legend { list-style: none; margin: 0; padding: 0; width: 100%; font-size: 0.85rem; }
+.legend li { display: flex; align-items: center; gap: 0.45rem; padding: 0.1rem 0; }
+.legend li span { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; }
+.legend i { width: 0.7rem; height: 0.7rem; border-radius: 3px; flex: none; }
 #blacklist-panel { margin-top: 1.25rem; }
 #blacklist-reset { margin: 0 0 0 0.75rem; padding: 0.25rem 0.7rem; font-size: 0.8rem; vertical-align: middle; }
 .danger { background: #b33; color: #fff; }

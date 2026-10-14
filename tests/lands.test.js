@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, withoutBanned, withoutCycles } from "../site/lands.js";
+import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, sourceDistribution, withoutBanned, withoutCycles } from "../site/lands.js";
 import { mulberry32, simulate } from "../site/sim.js";
 
 const land = (name, produced_mana, color_identity = [], usd = "1.00") => ({ name, produced_mana, color_identity, oracle_text: "", usd });
@@ -33,6 +33,15 @@ test("rankForColors lifts fiveColor lands only for four- and five-color decks", 
   assert.deepEqual(rankForColors(r, ["W", "U", "B", "R", "G"]).map((l) => l.name), ["Command Tower", "Mana Confluence", "Steam Vents"]);
   assert.deepEqual(rankForColors(r, ["U", "B", "R", "G"]).map((l) => l.name), ["Command Tower", "Mana Confluence", "Steam Vents"]);
   assert.deepEqual(rankForColors(r, ["U", "R", "G"]).map((l) => l.name), ["Command Tower", "Steam Vents", "Mana Confluence"]);
+});
+
+test("sourceDistribution counts rainbow lands as any-color and basics per color", () => {
+  const result = {
+    nonbasics: [{ produces: ["R", "G"] }, { produces: ["R", "G", "U"] }, { produces: ["U", "G"] }],
+    basics: { R: 4, G: 3, U: 2 },
+  };
+  assert.deepEqual(sourceDistribution(result, ["R", "G", "U"]), { R: 5, G: 5, U: 3, any: 1 });
+  assert.deepEqual(sourceDistribution({ nonbasics: [{ produces: ["R"] }], basics: { R: 1 } }, ["R"]), { R: 2, any: 0 });
 });
 
 test("withoutBanned drops blacklisted lands and cycles", () => {

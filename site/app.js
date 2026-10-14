@@ -1,6 +1,6 @@
 import { fetchCheapestPrices, fetchCollection, fetchPreferredImages, fetchPrintImages } from "./scryfall.js";
 import { BASICS, COLORS, countPips, deckStats, parseDecklist, sharesFromPips, sourceTargets } from "./deck.js";
-import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, withoutBanned, withoutCycles } from "./lands.js";
+import { exportList, flattenRankings, landType, rankForColors, rankForMode, selectLands, sourceDistribution, withoutBanned, withoutCycles } from "./lands.js";
 import { simulate } from "./sim.js";
 
 const $ = (id) => document.getElementById(id);
@@ -63,6 +63,21 @@ $("blacklist-reset").addEventListener("click", () => {
   if (state.deck) render();
 });
 renderBlacklist();
+
+const PIE_COLORS = { W: "#f3e9b8", U: "#6ea8f0", B: "#b08cc8", R: "#f07a5e", G: "#5fc07f", any: "#e8c84a" };
+function renderPie(id, items) {
+  const total = items.reduce((s, i) => s + i.value, 0) || 1;
+  let at = 0;
+  const stops = items.filter((i) => i.value > 0).map((i) => {
+    const from = at;
+    at += (i.value / total) * 100;
+    return `${PIE_COLORS[i.key]} ${from}% ${at}%`;
+  });
+  $(`pie-${id}`).style.background = stops.length ? `conic-gradient(${stops.join(", ")})` : "var(--border)";
+  $(`legend-${id}`).innerHTML = items
+    .map((i) => `<li><i style="background:${PIE_COLORS[i.key]}"></i>${i.label}<span>${i.text ?? i.value} · ${Math.round((i.value / total) * 100)}%</span></li>`)
+    .join("");
+}
 
 const pct = (x) => `${Math.round(x * 100)}%`;
 
@@ -130,6 +145,12 @@ function render() {
   $("results").hidden = false;
   $("empty").hidden = true;
   $("stats").textContent = `${stats.spells} nonland cards, average mana value ${stats.avgMv.toFixed(2)}, ${stats.rampDraw} cheap ramp/draw spells. Recommended lands: ${stats.landCount}.`;
+  renderPie("pips", colors.map((c) => ({ key: c, label: COLOR_NAMES[c], value: pips[c], text: pips[c].toFixed(1) })));
+  const dist = sourceDistribution(result, colors);
+  renderPie("sources", [
+    ...colors.map((c) => ({ key: c, label: COLOR_NAMES[c], value: dist[c] })),
+    ...(dist.any ? [{ key: "any", label: "Any color", value: dist.any }] : []),
+  ]);
   $("color-table").tBodies[0].innerHTML = colors
     .map(
       (c) => `<tr><td class="pip-${c}">${COLOR_NAMES[c]}</td><td>${pips[c].toFixed(1)}</td>

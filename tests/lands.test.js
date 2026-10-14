@@ -22,6 +22,12 @@ test("selectLands respects colors, budget and shares", () => {
   assert.match(exportList(r), /^1 Command Tower\n1 Hallowed Fountain\n\d+ Plains\n\d+ Island$/);
 });
 
+test("selectLands skips unpriced lands when a budget is set", () => {
+  const args = { ranked: [{ name: "Unpriced" }], cards: new Map([["unpriced", land("Unpriced", ["W", "U"], [], null)]]), colors: ["W", "U"], shares: { W: 50, U: 50 }, total: 36 };
+  assert.equal(selectLands({ ...args, budget: 10 }).nonbasics.length, 0);
+  assert.equal(selectLands(args).nonbasics.length, 1);
+});
+
 test("selectLands keeps a minimum of basics per color", () => {
   const r = selectLands({ ranked, cards, colors: ["W", "U"], shares: { W: 0, U: 100 }, total: 36, minBasics: 3 });
   assert.equal(r.basics.W, 3);

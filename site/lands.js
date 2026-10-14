@@ -33,7 +33,7 @@ export function selectLands({ ranked, cards, colors, shares, total, budget = nul
     const produces = landColors(card, colors);
     if (produces.length < 2) continue;
     const price = card.usd == null ? null : Number(card.usd);
-    if (budget != null && price != null && price > budget) continue;
+    if (budget != null && (price == null || price > budget)) continue;
     nonbasics.push({ name: card.name, cycle, produces, price, card });
   }
   const sources = Object.fromEntries(colors.map((c) => [c, 0]));

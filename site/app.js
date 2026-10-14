@@ -1,4 +1,4 @@
-import { fetchCollection } from "./scryfall.js";
+import { fetchCheapestPrices, fetchCollection } from "./scryfall.js";
 import { BASICS, COLORS, countPips, deckStats, parseDecklist, sharesFromPips, sourceTargets } from "./deck.js";
 import { exportList, flattenRankings, landType, rankForMode, selectLands } from "./lands.js";
 import { simulate } from "./sim.js";
@@ -31,6 +31,12 @@ $("deck-form").addEventListener("submit", async (e) => {
   try {
     const ranked = await loadRankings();
     const { cards, notFound } = await fetchCollection([...entries.map((e) => e.name), ...ranked.map((l) => l.name), ...Object.values(BASICS)]);
+    setStatus("Looking up cheapest paper prices…");
+    const prices = await fetchCheapestPrices(ranked.map((l) => l.name));
+    for (const l of ranked) {
+      const k = l.name.toLowerCase();
+      if (cards.has(k)) cards.set(k, { ...cards.get(k), usd: prices.get(k) ?? null });
+    }
     const deck = entries.map((e) => ({ ...e, card: cards.get(e.name.toLowerCase()) })).filter((e) => e.card);
     const picked = [...document.querySelectorAll("#colors input:checked")].map((i) => i.value);
     const colors = picked.length ? picked : COLORS.filter((c) => deck.some((e) => e.card.color_identity.includes(c)));

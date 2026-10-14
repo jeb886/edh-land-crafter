@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { fetchCollection } from "../site/scryfall.js";
+import { fetchCheapestPrices, fetchCollection } from "../site/scryfall.js";
 
 const memoryStorage = () => {
   const m = new Map();
@@ -30,4 +30,25 @@ test("fetchCollection batches by 75, caches, and retries 429", async () => {
   calls.length = 0;
   await fetchCollection(names, { fetchImpl, storage, wait: async () => {} });
   assert.deepEqual(calls, []);
+});
+
+test("fetchCheapestPrices searches game:paper cheapest:usd and caches", async () => {
+  const urls = [];
+  const fetchImpl = async (url) => {
+    urls.push(decodeURIComponent(url));
+    return { ok: true, status: 200, json: async () => ({ data: [{ name: "Steam Vents", prices: { usd: "9.60" } }, { name: "Foil Only", prices: { usd: null, usd_foil: "2.66" } }] }) };
+  };
+  const storage = memoryStorage();
+  const p = await fetchCheapestPrices(["Steam Vents", "Missing Land", "Foil Only"], { fetchImpl, storage, wait: async () => {} });
+  assert.equal(p.get("steam vents"), "9.60");
+  assert.equal(p.get("missing land"), null);
+  assert.equal(p.get("foil only"), "2.66");
+  assert.match(urls[0], /\/cards\/search\?q=game:paper cheapest:usd \(!"Steam Vents" or !"Missing Land"\)/);
+  await fetchCheapestPrices(["Steam Vents", "Missing Land", "Foil Only"], { fetchImpl, storage, wait: async () => {} });
+  assert.equal(urls.length, 1);
+});
+
+test("fetchCheapestPrices treats 404 as no matches", async () => {
+  const p = await fetchCheapestPrices(["Nope"], { fetchImpl: async () => ({ ok: false, status: 404 }), storage: memoryStorage(), wait: async () => {} });
+  assert.equal(p.get("nope"), null);
 });

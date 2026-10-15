@@ -7,8 +7,8 @@
     {"cycle": "Shocklands", "cards": ["Hallowed Fountain", "Watery Grave", "Blood Crypt", "Stomping Ground", "Temple Garden", "Godless Shrine", "Steam Vents", "Overgrown Tomb", "Sacred Foundry", "Breeding Pool"]},
     {"cycle": "Bondlands", "multiplayer": true, "cards": ["Sea of Clouds", "Morphic Pool", "Luxury Suite", "Spire Garden", "Bountiful Promenade", "Vault of Champions", "Training Center", "Undergrowth Stadium", "Spectator Seating", "Rejuvenating Springs"]},
     {"name": "Mana Confluence", "fiveColor": true},
-    {"name": "Path of Ancestry", "fiveColor": true},
     {"name": "City of Brass", "fiveColor": true},
+    {"name": "Path of Ancestry", "fiveColor": true},
     {"name": "Exotic Orchard", "fiveColor": true},
     {"cycle": "Surveil lands", "cards": ["Meticulous Archive", "Undercity Sewers", "Raucous Theater", "Commercial District", "Lush Portico", "Shadowy Backstreet", "Thundering Falls", "Underground Mortuary", "Elegant Parlor", "Hedge Maze"]},
     {"cycle": "Painlands", "cards": ["Adarkar Wastes", "Underground River", "Sulfurous Springs", "Karplusan Forest", "Brushland", "Caves of Koilos", "Shivan Reef", "Llanowar Wastes", "Battlefield Forge", "Yavimaya Coast"]},
@@ -41,20 +41,6 @@
     {"cycle": "Temples (scry lands)", "cards": ["Temple of Enlightenment", "Temple of Deceit", "Temple of Malice", "Temple of Abandon", "Temple of Plenty", "Temple of Silence", "Temple of Epiphany", "Temple of Malady", "Temple of Triumph", "Temple of Mystery"]},
     {"name": "Evolving Wilds"},
     {"name": "Terramorphic Expanse"},
-    {"cycle": "Typed tapped duals", "cards": ["Idyllic Beachfront", "Contaminated Aquifer", "Molten Tributary", "Geothermal Bog", "Sunlit Marsh", "Radiant Grove", "Sacred Peaks", "Haunted Mire", "Tangled Islet", "Wooded Ridgeline"]},
-    {"cycle": "Snow duals", "cards": ["Glacial Floodplain", "Ice Tunnel", "Volatile Fjord", "Sulfurous Mire", "Alpine Meadow", "Snowfield Sinkhole", "Arctic Treeline", "Highland Forest", "Rimewood Falls", "Woodland Chasm"]},
-    {"cycle": "Restless lands", "cards": ["Restless Anchorage", "Restless Reef", "Restless Vents", "Restless Ridgeline", "Restless Prairie", "Restless Fortress", "Restless Spire", "Restless Cottage", "Restless Bivouac", "Restless Vinestalk"]},
-    {"cycle": "Manlands", "cards": ["Celestial Colonnade", "Creeping Tar Pit", "Lavaclaw Reaches", "Raging Ravine", "Stirring Wildwood", "Shambling Vent", "Hissing Quagmire", "Needle Spires", "Wandering Fumarole", "Lumbering Falls"]},
-    {"cycle": "Thirteen-life lands", "cards": ["Abandoned Campground", "Bleeding Woods", "Etched Cornfield", "Lakeside Shack", "Neglected Manor", "Murky Sewer", "Peculiar Lighthouse", "Strangled Cemetery", "Raucous Carnival", "Razortrap Gorge"]},
-    {"cycle": "Guildgates", "cards": ["Azorius Guildgate", "Dimir Guildgate", "Rakdos Guildgate", "Gruul Guildgate", "Selesnya Guildgate", "Orzhov Guildgate", "Izzet Guildgate", "Golgari Guildgate", "Boros Guildgate", "Simic Guildgate"]},
-    {"cycle": "Artifact duals (bridges)", "cards": ["Razortide Bridge", "Mistvault Bridge", "Drossforge Bridge", "Slagwoods Bridge", "Thornglint Bridge", "Goldmire Bridge", "Silverbluff Bridge", "Darkmoss Bridge", "Rustvale Bridge", "Tanglepool Bridge"]},
-    {"cycle": "Thriving lands", "cards": ["Thriving Heath", "Thriving Isle", "Thriving Moor", "Thriving Bluff", "Thriving Grove"]},
-    {"cycle": "Avatar lands", "cards": ["Kyoshi Village", "North Pole Gates", "Meditation Pools", "Omashu City", "Foggy Bottom Swamp", "Misty Palms Oasis", "Serpent's Pass", "Boiling Rock Prison", "Airship Engine Room", "Sun-Blessed Peak"]},
-    {"cycle": "Surveil campus lands", "cards": ["Suburban Sanctuary", "University Campus", "Savage Mansion", "Ominous Asylum", "Sinister Hideout"]},
-    {"cycle": "Scry campus lands", "cards": ["Silverquill Campus", "Prismari Campus", "Witherbloom Campus", "Lorehold Campus", "Quandrix Campus"]},
-    {"cycle": "Town lands", "cards": ["Guadosalam, Farplane Gateway", "Gongaga, Reactor Town", "Windurst, Federation Center", "Gohn, Town of Ruin", "Baron, Airship Kingdom", "Sharlayan, Nation of Scholars", "Treno, Dark City", "Rabanastre, Royal City", "Insomnia, Crown City", "Vector, Imperial Capital"]},
-    {"cycle": "Desert duals", "cards": ["Abraded Bluffs", "Bristling Backwoods", "Creosote Heath", "Eroded Canyon", "Festering Gulch", "Forlorn Flats", "Jagged Barrens", "Lonely Arroyo", "Lush Oasis", "Soured Springs"]},
-    {"cycle": "Gainlands", "cards": ["Tranquil Cove", "Dismal Backwater", "Bloodfell Caves", "Rugged Highlands", "Blossoming Sands", "Scoured Barrens", "Swiftwater Cliffs", "Jungle Hollow", "Wind-Scarred Crag", "Thornwood Falls"]},
-    {"cycle": "Tapped duals", "cards": ["Meandering River", "Submerged Boneyard", "Cinder Barrens", "Timber Gorge", "Tranquil Expanse", "Forsaken Sanctuary", "Highland Lake", "Foul Orchard", "Stone Quarry", "Woodland Stream"]}
+    {"cycle": "Typed tapped duals", "cards": ["Idyllic Beachfront", "Contaminated Aquifer", "Molten Tributary", "Geothermal Bog", "Sunlit Marsh", "Radiant Grove", "Sacred Peaks", "Haunted Mire", "Tangled Islet", "Wooded Ridgeline"]}
   ]
 }
